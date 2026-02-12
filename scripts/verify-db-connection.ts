@@ -1,7 +1,7 @@
 
 import { PrismaClient } from '@prisma/client'
 
-// The exact URL I gave the user to use in Vercel
+// The CORRECTED URL (no brackets)
 const CONNECTION_STRING = "postgresql://postgres:SSX!2YrneU3%3FiJj@db.rpbjuuycavtpwfvoydvk.supabase.co:5432/postgres"
 
 const prisma = new PrismaClient({
@@ -13,7 +13,7 @@ const prisma = new PrismaClient({
 })
 
 async function main() {
-    console.log("Testing connection...")
+    console.log("Testing connection with FIXED credentials...")
     try {
         await prisma.$connect()
         console.log("✅ Successfully connected to Supabase!")
