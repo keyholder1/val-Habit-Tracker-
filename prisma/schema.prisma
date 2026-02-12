@@ -1,0 +1,198 @@
+// This is your Prisma schema file
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  image     String?
+  emailVerified DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  goals       Goal[]
+  weeklyLogs  WeeklyLog[]
+  migraineEntries MigraineEntry[]
+  projectEntries ProjectDiaryEntry[]
+  codeBlocks    ProjectCodeBlock[]
+  accounts    Account[]
+  sessions    Session[]
+  eventLogs   EventLog[]
+  analyticsSnapshot AnalyticsSnapshot?
+
+  @@map("users")
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@map("accounts")
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("sessions")
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+  @@map("verification_tokens")
+}
+
+model Goal {
+  id                   String      @id @default(cuid())
+  userId               String
+  name                 String
+  symbol               String      @default("🎯") // Emoji
+  weeklyTarget         Int         @default(1)
+  isArchived           Boolean     @default(false)
+  archivedFromWeek     DateTime?   // If set, goal is archived starting from this date
+  deletedAt            DateTime?   // If set, goal is soft-deleted
+  createdAt            DateTime    @default(now())
+  updatedAt            DateTime    @updatedAt
+  activeFrom           DateTime    @default(now())
+
+  user                 User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  weeklyLogs           WeeklyLog[]
+
+  @@index([userId, isArchived])
+  @@index([userId])
+  @@map("goals")
+}
+
+model WeeklyLog {
+  id              String   @id @default(cuid())
+  userId          String
+  goalId          String
+  weekStartDate   DateTime
+  weeklyTarget    Int      @default(7)
+  checkboxStates  Json     @default("[]") // Array of 7 booleans for Mon-Sun
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goal            Goal     @relation(fields: [goalId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, goalId, weekStartDate])
+  @@index([userId, weekStartDate])
+  @@index([goalId, weekStartDate])
+  @@index([goalId])
+  @@map("weekly_logs")
+}
+
+model MigraineEntry {
+  id            String   @id @default(cuid())
+  userId        String
+  date          DateTime
+  severity      Int
+  // type removed
+  foodBefore    String?  @db.Text
+  foodAfterDay1 String?  @db.Text
+  foodAfterDay2 String?  @db.Text
+  foodAfterDay3 String?  @db.Text
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, date])
+  @@index([userId, date])
+  @@map("migraine_entries")
+}
+
+model ProjectDiaryEntry {
+  id                 String           @id @default(cuid())
+  userId             String
+  projectName        String
+  projectDescription String           @db.Text
+  projectType        String           @default("Web App")
+  techStack          String           @default("Next.js, Tailwind, TypeScript")
+  targetAudience     String           @default("Developers")
+  uniqueSellingPoint String           @default("High performance")
+  status             String           @default("Ideation")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  codeBlocks         ProjectCodeBlock[]
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("project_diary_entries")
+}
+
+model ProjectCodeBlock {
+  id          String   @id @default(cuid())
+  projectId   String
+  userId      String
+  title       String
+  codeContent String   @db.Text
+  language    String?
+  notes       String?  @db.Text
+  isDeleted   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  project ProjectDiaryEntry @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user    User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([projectId])
+  @@index([userId])
+  @@map("project_code_blocks")
+}
+
+model EventLog {
+  id          String   @id @default(cuid())
+  userId      String
+  eventType   String
+  entityType  String
+  entityId    String
+  payload     Json?
+  eventSource String?
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, createdAt])
+  @@map("event_logs")
+}
+
+model AnalyticsSnapshot {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  snapshotJson Json
+  updatedAt    DateTime @updatedAt
+
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("analytics_snapshots")
+}

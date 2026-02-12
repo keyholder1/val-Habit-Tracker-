@@ -1,0 +1,58 @@
+﻿
+> habit-tracker@1.0.0 build
+> next build
+
+  Γû▓ Next.js 14.2.35
+  - Environments: .env.local
+
+   Creating an optimized production build ...
+ Γ£ô Compiled successfully
+   Linting and checking validity of types ...
+   Collecting page data ...
+node.exe : unhandledRejection Error: Cannot find module './682.js'
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (unhandledReject...dule './682 
+   .js':String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Require stack:
+- C:\Users\samcl\Downloads\Val\.next\server\webpack-runtime.js
+- C:\Users\samcl\Downloads\Val\.next\server\pages\_document.js
+- C:\Users\samcl\Downloads\Val\node_modules\next\dist\server\require.js
+- C:\Users\samcl\Downloads\Val\node_modules\next\dist\server\load-component
+s.js
+- C:\Users\samcl\Downloads\Val\node_modules\next\dist\build\utils.js
+- C:\Users\samcl\Downloads\Val\node_modules\next\dist\build\worker.js
+- C:\Users\samcl\Downloads\Val\node_modules\next\dist\compiled\jest-worker\
+processChild.js
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1369:15)
+    at C:\Users\samcl\Downloads\Val\node_modules\next\dist\server\require-h
+ook.js:55:36
+    at defaultResolveImpl (node:internal/modules/cjs/loader:1025:19)
+    at resolveForCJSWithHooks (node:internal/modules/cjs/loader:1030:22)
+    at Module._load (node:internal/modules/cjs/loader:1179:37)
+    at TracingChannel.traceSync (node:diagnostics_channel:322:14)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:235:24)
+    at Module.<anonymous> (node:internal/modules/cjs/loader:1449:12)
+    at mod.require (C:\Users\samcl\Downloads\Val\node_modules\next\dist\ser
+ver\require-hook.js:65:28)
+    at require (node:internal/modules/helpers:135:16) {
+  type: 'Error',
+  code: 'MODULE_NOT_FOUND',
+  requireStack: [
+    'C:\\Users\\samcl\\Downloads\\Val\\.next\\server\\webpack-runtime.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\.next\\server\\pages\\_document.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\node_modules\\next\\dist\\server\\re
+quire.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\node_modules\\next\\dist\\server\\lo
+ad-components.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\node_modules\\next\\dist\\build\\uti
+ls.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\node_modules\\next\\dist\\build\\wor
+ker.js',
+    'C:\\Users\\samcl\\Downloads\\Val\\node_modules\\next\\dist\\compiled\\
+jest-worker\\processChild.js'
+  ]
+}
