@@ -36,10 +36,10 @@ export const authOptions: NextAuthOptions = {
     callbacks: {
         async signIn({ user, account }) {
             // Enforce whitelist
-            if (!isEmailAllowed(user.email)) {
-                console.log('Sign-in blocked for non-whitelisted email:', user.email)
-                return false
-            }
+            // if (!isEmailAllowed(user.email)) {
+            //     console.log('Sign-in blocked for non-whitelisted email:', user.email)
+            //     return false
+            // }
             console.log('Sign-in allowed for:', user.email)
             return true
         },
