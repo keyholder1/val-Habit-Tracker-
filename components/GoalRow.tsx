@@ -197,25 +197,27 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
                 </div>
 
                 {/* Row 2: Checkboxes — full width, flex row, with day labels */}
-                <div className="flex items-center justify-between w-full overflow-hidden" style={{ gap: '2px' }}>
+                <div className="flex items-center w-full" style={{ gap: '2px' }}>
                     {checkboxData.map(({ checked, isDisabled, index }) => (
                         <div
                             key={index}
                             className={`
-                                flex flex-col items-center gap-0.5 rounded-lg transition-all duration-200 py-1 min-w-0
+                                flex flex-col items-center gap-0.5 rounded-lg transition-all duration-200 py-1
                                 ${index === highlightIndex
                                     ? 'bg-primary-50 ring-1 ring-primary-100'
                                     : ''}
                                 ${isDisabled ? 'opacity-40' : ''}
                             `}
-                            style={{ flex: '1 1 0%' }}
+                            style={{ flex: '1 1 0%', minWidth: 0 }}
                         >
                             <span className="text-[9px] font-semibold text-neutral-400 uppercase">{DAY_LABELS[index]}</span>
-                            <Checkbox
-                                checked={checked}
-                                onChange={() => handleCheckboxChange(index)}
-                                disabled={isDisabled}
-                            />
+                            <div className="shrink-0">
+                                <Checkbox
+                                    checked={checked}
+                                    onChange={() => handleCheckboxChange(index)}
+                                    disabled={isDisabled}
+                                />
+                            </div>
                         </div>
                     ))}
                 </div>
