@@ -9,6 +9,7 @@ export const metadata: Metadata = {
 }
 
 import QueryProvider from '@/components/providers/QueryProvider'
+import { DeviceProvider } from '@/components/providers/DeviceProvider'
 
 // ...
 
@@ -22,10 +23,12 @@ export default function RootLayout({
             <body>
                 <QueryProvider>
                     <AuthProvider>
-                        <BackgroundController />
-                        <div className="relative z-10">
-                            {children}
-                        </div>
+                        <DeviceProvider>
+                            <BackgroundController />
+                            <div className="relative z-10">
+                                {children}
+                            </div>
+                        </DeviceProvider>
                     </AuthProvider>
                 </QueryProvider>
             </body>

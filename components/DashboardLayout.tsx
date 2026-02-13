@@ -14,7 +14,7 @@ import Link from 'next/link'
 import { isMigraineUser, isProjectUser } from '@/lib/whitelist'
 import ProjectDiaryPanel from './project/ProjectDiaryPanel'
 import { useGoals, Goal } from '@/hooks/useGoals'
-import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { useDevice } from '@/components/providers/DeviceProvider'
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 import BottomNav from './navigation/BottomNav'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -32,22 +32,10 @@ export default function DashboardLayout() {
 
     const [viewMode, setViewMode] = useState<ViewMode>('week')
     const { goals: goalsData, isLoading: goalsLoading, error: goalsError } = useGoals()
-    const { isMobile, breakpoint } = useBreakpoint()
+    const { isMobile, isHydrated } = useDevice()
     const isTouch = useIsTouchDevice()
 
-    // Debug logging for goals data
-    useEffect(() => {
-        if (status === 'authenticated') {
-            console.log('📊 [Dashboard] Session user:', session?.user?.email)
-            console.log('📊 [Dashboard] Goals loading state:', goalsLoading)
-            if (goalsData) {
-                console.log('📊 [Dashboard] Goals fetched:', (goalsData as any).length)
-            }
-            if (goalsError) {
-                console.error('📊 [Dashboard] Goals fetch error:', goalsError)
-            }
-        }
-    }, [status, session, goalsLoading, goalsData, goalsError])
+    // ... debug logging ...
 
     // Derived state
     const goals = goalsData || []
@@ -96,12 +84,7 @@ export default function DashboardLayout() {
         setDisplayMonth(new Date(next.getFullYear(), next.getMonth(), 1))
     }, [selectedDate, handleDateSelect])
 
-    const [mounted, setMounted] = useState(false)
-    useEffect(() => {
-        setMounted(true)
-    }, [])
-
-    if (!mounted) return null
+    if (!isHydrated) return null
 
     return (
         <div className="min-h-screen relative flex flex-col bg-transparent">
