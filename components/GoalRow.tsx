@@ -109,12 +109,13 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
 
     return (
         <div
-            className="group bg-white/50 rounded-xl p-2 sm:p-3 hover:bg-white transition-all duration-200 border border-transparent hover:border-neutral-200 shadow-sm hover:shadow-md overflow-hidden"
-            style={{ marginBottom: '8px' }}
+            className="group bg-white rounded-xl p-3 sm:p-4 hover:bg-white transition-all duration-200 border-2 border-neutral-200 hover:border-neutral-400 shadow-sm hover:shadow-md"
+            style={{ marginBottom: '12px' }}
         >
-            <div className="flex flex-col sm:grid sm:grid-cols-[240px_1fr] gap-3 sm:gap-2 items-stretch sm:items-center">
-                {/* 1. Goal Info Column */}
-                <div className="relative flex items-center gap-2 sm:gap-3 pr-10 sm:pr-8 sm:border-r border-neutral-100/50">
+            {/* Main grid — matches WeekDashboard day-label grid exactly */}
+            <div className="grid grid-cols-[1fr_repeat(7,32px)] sm:grid-cols-[240px_repeat(7,1fr)] gap-1 sm:gap-2 items-center px-1 sm:px-0">
+                {/* 1. Goal Info — col 1 */}
+                <div className="relative flex items-center gap-2 sm:gap-3 min-w-0">
                     <span className="text-lg sm:text-xl bg-neutral-100 p-1.5 sm:p-2 rounded-lg shrink-0">{goalSymbol || ''}</span>
                     <div className="min-w-0 flex-1">
                         <h4 className="font-semibold text-neutral-800 text-sm sm:text-base leading-tight truncate" title={goalName}>
@@ -135,51 +136,38 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
                             </div>
                         </div>
                     </div>
-                    {/* Archive Button */}
-                    <button
-                        onClick={() => setIsArchiveModalOpen(true)}
-                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 transition-all p-2 sm:p-1"
-                        title="Archive Goal"
-                    >
-                        <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
-                        </svg>
-                    </button>
                 </div>
 
-                {/* 2. Checkboxes Grid (Responsive Wrapping) */}
-                <div className="grid grid-cols-7 sm:grid-cols-7 gap-1 sm:gap-2 justify-items-center">
-                    {checkboxes.map((checked, index) => {
-                        // Calculate if this specific day is before the goal was active
-                        const dayDate = new Date(weekStartDate)
-                        dayDate.setDate(dayDate.getDate() + index)
-                        dayDate.setHours(0, 0, 0, 0)
+                {/* 2. Checkboxes — cols 2-8, one per column */}
+                {checkboxes.map((checked, index) => {
+                    const dayDate = new Date(weekStartDate)
+                    dayDate.setDate(dayDate.getDate() + index)
+                    dayDate.setHours(0, 0, 0, 0)
 
-                        const activeDate = goalActiveFrom ? new Date(goalActiveFrom) : null
-                        if (activeDate) activeDate.setHours(0, 0, 0, 0)
+                    const activeDate = goalActiveFrom ? new Date(goalActiveFrom) : null
+                    if (activeDate) activeDate.setHours(0, 0, 0, 0)
 
-                        const isDisabled = activeDate ? dayDate < activeDate : false
+                    const isDisabled = activeDate ? dayDate < activeDate : false
 
-                        return (
-                            <div
-                                key={index}
-                                className={`
-                                    flex justify-center items-center w-full aspect-square sm:h-full rounded-lg transition-all duration-200
-                                    ${index === highlightIndex
-                                        ? 'bg-primary-50 ring-1 ring-primary-100 shadow-sm'
-                                        : 'hover:bg-neutral-50'}
-                                    ${isDisabled ? 'bg-neutral-50/50' : ''}
-                                `}
-                            >
-                                <Checkbox
-                                    checked={checked}
-                                    onChange={() => handleCheckboxChange(index)}
-                                    disabled={isDisabled}
-                                />
-                            </div>
-                        )
-                    })}
-                </div>
+                    return (
+                        <div
+                            key={index}
+                            className={`
+                                flex justify-center items-center rounded-lg transition-all duration-200 py-1 sm:py-2
+                                ${index === highlightIndex
+                                    ? 'bg-primary-50 ring-1 ring-primary-100 shadow-sm'
+                                    : 'hover:bg-neutral-50'}
+                                ${isDisabled ? 'bg-neutral-50/50' : ''}
+                            `}
+                        >
+                            <Checkbox
+                                checked={checked}
+                                onChange={() => handleCheckboxChange(index)}
+                                disabled={isDisabled}
+                            />
+                        </div>
+                    )
+                })}
             </div>
 
             {/* Progress Bar */}

@@ -11,9 +11,21 @@ export async function PATCH(
 ) {
     try {
         const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
+        if (!session?.user?.email) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
+
+        // Robust User Lookup
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            select: { id: true }
+        })
+
+        if (!user) {
+            return NextResponse.json({ error: 'User not found in DB' }, { status: 404 })
+        }
+
+        const userId = user.id
 
         const body = await req.json()
         const { symbol, name, weeklyTarget, isArchived, archivedFromWeek, deletedAt, expectedUpdatedAt } = body
@@ -28,7 +40,7 @@ export async function PATCH(
             where: { id: params.id },
         })
 
-        if (!existingGoal || existingGoal.userId !== session.user.id) {
+        if (!existingGoal || existingGoal.userId !== userId) {
             return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
         }
 
@@ -59,7 +71,7 @@ export async function PATCH(
 
             if (eventType) {
                 await logEvent(tx, {
-                    userId: session.user.id,
+                    userId: userId,
                     eventType,
                     entityType: 'Goal',
                     entityId: updated.id,
@@ -71,7 +83,7 @@ export async function PATCH(
         })
 
         // Invalidate analytics cache
-        invalidateAnalyticsCache(session.user.id)
+        invalidateAnalyticsCache(userId)
 
         return NextResponse.json(updatedGoal)
     } catch (error) {
@@ -85,19 +97,38 @@ export async function DELETE(
     { params }: { params: { id: string } }
 ) {
     try {
+        console.log('🔴 [API DELETE] Attempting to delete goal:', params.id)
         const session = await getServerSession(authOptions)
-        if (!session?.user?.id) {
+        if (!session?.user?.email) {
+            console.log('🔴 [API DELETE] No session email, returning 401')
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
+        console.log('🔴 [API DELETE] Session email:', session.user.email)
+
+        // Robust User Lookup
+        const user = await prisma.user.findUnique({
+            where: { email: session.user.email },
+            select: { id: true }
+        })
+
+        if (!user) {
+            console.log('🔴 [API DELETE] User not found for email:', session.user.email)
+            return NextResponse.json({ error: 'User not found' }, { status: 404 })
+        }
+
+        const userId = user.id
+        console.log('🔴 [API DELETE] Resolved userId:', userId, 'for goal:', params.id)
+
         const deletedGoal = await prisma.$transaction(async (tx) => {
-            // Verify and find first (since deleteMany doesn't return the record)
             const existing = await tx.goal.findFirst({
                 where: {
                     id: params.id,
-                    userId: session.user.id
+                    userId: userId
                 }
             })
+
+            console.log('🔴 [API DELETE] Goal lookup result:', existing ? `Found: ${existing.name}` : 'NOT FOUND')
 
             if (!existing) return null
 
@@ -106,27 +137,29 @@ export async function DELETE(
             })
 
             await logEvent(tx, {
-                userId: session.user.id,
+                userId: userId,
                 eventType: EVENTS.GOAL_DELETED,
                 entityType: 'Goal',
                 entityId: params.id,
                 payload: { method: 'HARD_DELETE' }
             })
 
+            console.log('🔴 [API DELETE] Successfully hard-deleted goal:', existing.name)
             return existing
         })
 
         if (!deletedGoal) {
+            console.log('🔴 [API DELETE] Goal not found, returning 404')
             return NextResponse.json({ error: 'Goal not found' }, { status: 404 })
         }
 
-
         // Invalidate analytics cache
-        invalidateAnalyticsCache(session.user.id)
+        invalidateAnalyticsCache(userId)
 
+        console.log('🔴 [API DELETE] ✅ Deletion complete for goal:', deletedGoal.name)
         return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('Failed to delete goal:', error)
+        console.error('🔴 [API DELETE] ❌ CRASH:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
 }

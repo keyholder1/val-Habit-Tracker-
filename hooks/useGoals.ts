@@ -82,10 +82,6 @@ export function useGoals() {
 
     const deleteGoal = useMutation({
         mutationFn: async (id: string) => {
-            // Using PATCH to soft-delete by setting deletedAt
-            // This preserves history if needed, or we can use DELETE for hard delete.
-            // Prompt implies "Goal gone everywhere", but "Past logs preserved if required".
-            // Soft delete is safer.
             const res = await fetch(`/api/goals/${id}`, {
                 method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
@@ -102,6 +98,47 @@ export function useGoals() {
         },
     })
 
+    const deleteGoalPermanently = useMutation({
+        mutationFn: async (id: string) => {
+            const res = await fetch(`/api/goals/${id}`, {
+                method: 'DELETE',
+            })
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({ error: 'Unknown error' }))
+                throw new Error(errorData.error || 'Failed to delete goal permanently')
+            }
+            return res.json()
+        },
+        // Optimistic update: remove goal from cache immediately
+        onMutate: async (id: string) => {
+            // Cancel any outgoing refetches
+            await queryClient.cancelQueries({ queryKey })
+
+            // Snapshot current goals
+            const previousGoals = queryClient.getQueryData<Goal[]>(queryKey)
+
+            // Optimistically remove the goal
+            queryClient.setQueryData<Goal[]>(queryKey, (old) =>
+                old ? old.filter(g => g.id !== id) : []
+            )
+
+            return { previousGoals }
+        },
+        onError: (_err, _id, context) => {
+            // Rollback on failure
+            if (context?.previousGoals) {
+                queryClient.setQueryData(queryKey, context.previousGoals)
+            }
+        },
+        onSettled: () => {
+            // Always refetch after error or success
+            queryClient.invalidateQueries({ queryKey })
+            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
+            queryClient.invalidateQueries({ queryKey: ['analytics'] })
+            queryClient.invalidateQueries({ queryKey: ['monthView'] })
+        },
+    })
+
     return {
         goals,
         isLoading,
@@ -110,5 +147,6 @@ export function useGoals() {
         updateGoal,
         archiveGoal,
         deleteGoal,
+        deleteGoalPermanently,
     }
 }
