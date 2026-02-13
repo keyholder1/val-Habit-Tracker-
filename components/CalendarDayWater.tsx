@@ -56,9 +56,9 @@ export default function CalendarDayWater({
             {/* 1. Base Background Layer (Bottom) - z-0 */}
             <div className={`absolute inset-0 z-0 ${isCurrentMonth ? 'bg-white/40' : 'bg-neutral-50/30'}`} />
 
-            {/* 2. Water Fill Layer (Middle) - z-1 */}
+            {/* 2. Water Fill Layer (Middle) - z-10 */}
             <div
-                className="absolute bottom-0 left-0 right-0 transition-all duration-[800ms] ease-out-cubic z-1"
+                className="absolute bottom-0 left-0 right-0 transition-all duration-[800ms] ease-out-cubic z-10"
                 style={{
                     height: `${safePercent}%`, // Direct height control
                     ...finalWaterStyle
@@ -68,8 +68,8 @@ export default function CalendarDayWater({
                 <div className="w-full h-[1px] bg-black/5 absolute top-0 left-0" />
             </div>
 
-            {/* 3. Content Layer (Top) */}
-            <div className="relative z-10 flex flex-col h-full p-1">
+            {/* 3. Content Layer (Top) - z-20 */}
+            <div className="relative z-20 flex flex-col h-full p-1">
                 <span
                     className={`
                         text-base font-bold inline-flex items-center justify-center w-8 h-8 rounded-full
