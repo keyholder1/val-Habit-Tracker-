@@ -1,9 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import React, { memo, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { signOut } from 'next-auth/react'
 import LazyGraph from './LazyGraph'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
 
@@ -29,8 +28,40 @@ const WeeklyDensityHeatmap = dynamic(() => import('./WeeklyDensityHeatmap'), { s
 
 type Section = 'trends' | 'comparison' | 'consistency' | 'distribution' | 'heatmaps' | 'insights'
 
+interface SectionNavProps {
+    activeSection: Section;
+    setActiveSection: (section: Section) => void;
+    sections: { id: Section; name: string; count: number }[];
+}
+
+const SectionNav = memo(({ activeSection, setActiveSection, sections }: SectionNavProps) => (
+    <div className="flex justify-center mb-8 sm:mb-16">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:gap-4 max-w-4xl w-full px-2">
+            {sections.map((section) => (
+                <button
+                    key={section.id}
+                    onClick={() => setActiveSection(section.id)}
+                    className={`px-3 sm:px-6 py-2 sm:py-3.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.15em] sm:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap flex-shrink-0 ${activeSection === section.id
+                        ? 'bg-white text-black border-white shadow-[0_0_40px_rgba(255,255,255,0.25)] scale-105'
+                        : 'bg-neutral-900/40 text-neutral-600 border-white/5 hover:border-white/20 hover:text-neutral-300'
+                        }`}
+                >
+                    <span className="flex items-center gap-1.5 sm:gap-3">
+                        {section.name}
+                        <span className={`px-1.5 py-0.5 rounded-full text-[7px] sm:text-[9px] ${activeSection === section.id ? 'bg-black text-white' : 'bg-neutral-800 text-neutral-500'}`}>
+                            {section.count}
+                        </span>
+                    </span>
+                </button>
+            ))}
+        </div>
+    </div>
+))
+
+SectionNav.displayName = 'SectionNav'
+
 export default function AnalyticsDashboard() {
-    const [activeSection, setActiveSection] = useState<Section>('distribution')
+    const [activeSection, setActiveSection] = useState<Section>('trends')
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
     const { isMobile } = useBreakpoint()
 
@@ -62,7 +93,7 @@ export default function AnalyticsDashboard() {
     )
 
     return (
-        <div className="min-h-screen relative bg-[#050505] text-neutral-200">
+        <div className="min-h-screen relative bg-[#050505] text-neutral-200 overflow-x-hidden">
             {/* Nav Header */}
             <header className="border-b border-white/5 sticky top-0 z-40 bg-black/20 backdrop-blur-xl ring-1 ring-white/5">
                 <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
@@ -90,25 +121,11 @@ export default function AnalyticsDashboard() {
 
             <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 relative z-10">
                 {/* Tabs */}
-                <div className="flex items-center gap-2 sm:gap-3 mb-8 sm:mb-16 overflow-x-auto pb-4 no-scrollbar">
-                    {sections.map((section) => (
-                        <button
-                            key={section.id}
-                            onClick={() => setActiveSection(section.id)}
-                            className={`px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap ${activeSection === section.id
-                                ? 'bg-white text-black border-white shadow-[0_0_50px_rgba(255,255,255,0.3)] scale-105'
-                                : 'bg-neutral-900/40 text-neutral-600 border-white/5 hover:border-white/20 hover:text-neutral-300'
-                                }`}
-                        >
-                            <span className="flex items-center gap-2 sm:gap-3">
-                                {section.name}
-                                <span className={`px-1.5 py-0.5 rounded-full text-[8px] sm:text-[9px] ${activeSection === section.id ? 'bg-black text-white' : 'bg-neutral-800 text-neutral-500'}`}>
-                                    {section.count}
-                                </span>
-                            </span>
-                        </button>
-                    ))}
-                </div>
+                <SectionNav
+                    activeSection={activeSection}
+                    setActiveSection={setActiveSection}
+                    sections={sections}
+                />
 
                 {/* Section Content */}
                 <div key={activeSection} className="animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both overflow-x-hidden">
