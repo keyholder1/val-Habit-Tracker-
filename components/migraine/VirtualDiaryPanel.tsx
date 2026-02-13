@@ -47,7 +47,7 @@ export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect, refre
             const res = await fetch(`/api/migraines?${params.toString()}`)
             if (res.ok) {
                 const data = await res.json()
-                const newEntries = Array.isArray(data.data) ? data.data : []
+                const newEntries = Array.isArray(data.entries) ? data.entries : []
 
                 setEntries(prev => reset ? newEntries : [...prev, ...newEntries])
                 setTotal(data.meta.total)
