@@ -133,8 +133,9 @@ export async function GET(req: NextRequest) {
             checkboxStates.forEach((isChecked, dayIndex) => {
                 if (isChecked) {
                     const logDay = new Date(weekStart)
-                    logDay.setDate(logDay.getDate() + dayIndex)
-                    logDay.setHours(0, 0, 0, 0)
+                    // Use UTC methods to prevent server timezone offsets (e.g. US East) from shifting the date
+                    logDay.setUTCDate(logDay.getUTCDate() + dayIndex)
+                    logDay.setUTCHours(0, 0, 0, 0)
 
                     const d = logDay.toISOString().split('T')[0]
 

@@ -41,6 +41,6 @@
   "devDependencies": {
     "@types/animejs": "^3.1.13",
     "@types/three": "^0.160.0",
-    "dotenv": "^17.2.4"
+    "dotenv": "^17.3.1"
   }
 }
