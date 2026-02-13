@@ -36,7 +36,9 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
     // Create goal map for O(1) symbol lookup
     const goalMap = useMemo(() => {
         const map = new Map<string, string>()
-        goals.forEach(g => map.set(g.id, g.symbol || '🎯'))
+        // Defensive check: goals might be undefined during initial load/error state
+        const safeGoals = Array.isArray(goals) ? goals : []
+        safeGoals.forEach(g => map.set(g.id, g.symbol || '🎯'))
         return map
     }, [goals])
 

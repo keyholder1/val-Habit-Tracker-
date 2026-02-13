@@ -46,7 +46,7 @@ export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect }: Vir
             const res = await fetch(`/api/migraines?${params.toString()}`)
             if (res.ok) {
                 const data = await res.json()
-                const newEntries = data.data
+                const newEntries = Array.isArray(data.data) ? data.data : []
 
                 setEntries(prev => reset ? newEntries : [...prev, ...newEntries])
                 setTotal(data.meta.total)
@@ -168,7 +168,7 @@ export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect }: Vir
                     className="flex-1 overflow-y-auto p-4 space-y-3 bg-neutral-50/50"
                     onScroll={handleScroll}
                 >
-                    {entries.map((entry) => (
+                    {(entries || []).map((entry) => (
                         <MigraineEntryCard
                             key={entry.id}
                             entry={entry}

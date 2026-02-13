@@ -34,10 +34,10 @@ export default function CalendarDayWater({
     // Use dynamic color if provided, fallback to theme
     const finalWaterStyle = waterColor ? {
         background: waterColor, // Expecting a gradient string or color
-        opacity: 0.3 // Slightly higher opacity for visibility of the dynamic color
+        opacity: 0.8 // much higher opacity (was 0.3)
     } : {
         background: theme.waterGradient,
-        opacity: 0.2
+        opacity: 0.4 // slightly higher (was 0.2)
     }
 
     return (
