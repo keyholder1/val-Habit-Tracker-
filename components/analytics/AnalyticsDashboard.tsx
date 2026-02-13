@@ -111,9 +111,9 @@ export default function AnalyticsDashboard() {
                 </div>
 
                 {/* Section Content */}
-                <div key={activeSection} className="animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
+                <div key={activeSection} className="animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both overflow-x-hidden">
                     {activeSection === 'trends' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 w-full">
                             <LazyGraph><DailyCompletionTrend year={selectedYear} /></LazyGraph>
                             <LazyGraph><WeeklyCompletionTrend year={selectedYear} /></LazyGraph>
                             <LazyGraph><MonthlyCompletionTrend year={selectedYear} /></LazyGraph>
@@ -124,7 +124,7 @@ export default function AnalyticsDashboard() {
                     )}
 
                     {activeSection === 'comparison' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 w-full">
                             <LazyGraph><WeeklyGoalComparison year={selectedYear} /></LazyGraph>
                             <LazyGraph><MonthlyGoalComparison year={selectedYear} /></LazyGraph>
                             <LazyGraph><StackedWeeklyCompletion year={selectedYear} /></LazyGraph>
@@ -133,7 +133,7 @@ export default function AnalyticsDashboard() {
                     )}
 
                     {activeSection === 'consistency' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10 w-full">
                             <LazyGraph><StreakTimeline year={selectedYear} /></LazyGraph>
                             <LazyGraph><LongestStreak year={selectedYear} /></LazyGraph>
                             <LazyGraph><MissFrequency year={selectedYear} /></LazyGraph>
@@ -142,7 +142,7 @@ export default function AnalyticsDashboard() {
                     )}
 
                     {activeSection === 'distribution' && (
-                        <div className="flex flex-col gap-6 sm:gap-10">
+                        <div className="flex flex-col gap-6 sm:gap-10 w-full">
                             <LazyGraph><CompletionPiePerGoal year={selectedYear} /></LazyGraph>
                             <LazyGraph><LifetimeContribution year={selectedYear} /></LazyGraph>
                             <LazyGraph><TargetVsActual year={selectedYear} /></LazyGraph>
@@ -150,7 +150,7 @@ export default function AnalyticsDashboard() {
                     )}
 
                     {activeSection === 'heatmaps' && (
-                        <div className="flex flex-col gap-6 sm:gap-10">
+                        <div className="flex flex-col gap-6 sm:gap-10 w-full">
                             <LazyGraph><CalendarHeatmap year={selectedYear} /></LazyGraph>
                             <LazyGraph><WeeklyDensityHeatmap year={selectedYear} /></LazyGraph>
                         </div>

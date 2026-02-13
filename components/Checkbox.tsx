@@ -1,6 +1,7 @@
 'use client'
 
 import { motion } from 'framer-motion'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
 
 interface CheckboxProps {
     checked: boolean
@@ -9,6 +10,9 @@ interface CheckboxProps {
 }
 
 export default function Checkbox({ checked, onChange, disabled }: CheckboxProps) {
+    const { isMobile } = useBreakpoint()
+    const size = isMobile ? 'w-4 h-4' : 'w-6 h-6'
+
     return (
         <motion.button
             onClick={disabled ? undefined : onChange}
@@ -16,7 +20,7 @@ export default function Checkbox({ checked, onChange, disabled }: CheckboxProps)
             whileTap={disabled ? {} : { scale: 0.95 }}
             disabled={disabled}
             className={`
-                relative w-6 h-6 rounded border-2 transition-all focus:outline-none 
+                relative ${size} rounded border-[1.5px] sm:border-2 transition-all focus:outline-none 
                 ${disabled ? 'opacity-30 cursor-not-allowed bg-neutral-100 border-neutral-200' : 'focus:ring-2 focus:ring-primary-300 focus:ring-offset-1'}
             `}
             style={{

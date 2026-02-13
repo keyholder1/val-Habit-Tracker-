@@ -58,10 +58,20 @@ const DailyCompletionTrend = ({ year }: { year?: number }) => {
                     }
                 }} style={{ cursor: 'pointer' }}>
                     <CartesianGrid strokeDasharray="3 3" stroke="#e4e4e7" />
-                    <XAxis dataKey="date" fontSize={12} stroke="#71717a"
+                    <XAxis
+                        dataKey="date"
+                        fontSize={10}
+                        stroke="#71717a"
+                        minTickGap={20}
+                        interval="preserveStartEnd"
                         tickFormatter={(val) => new Date(val).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
                     />
-                    <YAxis fontSize={12} stroke="#71717a" unit="%" />
+                    <YAxis
+                        fontSize={10}
+                        stroke="#71717a"
+                        unit="%"
+                        width={30}
+                    />
                     <Tooltip
                         labelFormatter={(val) => new Date(val).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
                         contentStyle={{

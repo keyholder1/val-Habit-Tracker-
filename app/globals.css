@@ -29,10 +29,9 @@ html,
 body {
   max-width: 100vw;
   overflow-x: hidden;
+  position: relative;
   font-family: "Palatino Linotype", "Book Antiqua", Palatino, serif;
   background-color: transparent;
-  /* Handled by AppBackground */
-  /* Keep strictly for fallback, actual bg is liquid ether */
   color: var(--color-text-primary);
   transition: var(--transition-smooth);
   -webkit-font-smoothing: antialiased;
@@ -49,6 +48,13 @@ body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Ensure root matches viewport */
+#__next,
+main {
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
 /* Touch-specific overrides via media query fallback */
 @media (pointer: coarse) {
 
@@ -56,8 +62,8 @@ body {
   [role="button"],
   input[type="checkbox"],
   input[type="radio"] {
-    min-height: 44px;
-    min-width: 44px;
+    min-height: 40px;
+    min-width: 40px;
   }
 }
 

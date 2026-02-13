@@ -88,87 +88,88 @@ function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect 
     }
 
     return (
-        <div className="glass rounded-2xl shadow-soft p-6 border border-neutral-200 transition-all">
+        <div className="glass rounded-2xl shadow-soft p-4 sm:p-6 border border-neutral-200 transition-all overflow-hidden flex flex-col max-h-[85vh] sm:max-h-none">
             {/* Week Header */}
-            <div className="mb-6 pb-4 border-b border-neutral-200 flex justify-between items-center">
-                <div className="flex items-center gap-4">
-                    <div>
-                        <h3 className="text-xl font-semibold text-neutral-800">
-                            {formatDate(weekStartDate)} — {formatDate(weekEnd)}
-                        </h3>
-                        <p className="text-sm text-neutral-500 mt-1">
-                            Week of {weekStartDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                        </p>
-                    </div>
-                    <div className="flex gap-2">
-                        {highlightIndex !== -1 && (
-                            <span className="px-3 py-1 bg-primary-100 text-primary-700 text-xs font-medium rounded-full">
-                                📍 {highlightDate?.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric' })}
-                            </span>
-                        )}
-                    </div>
+            <div className="mb-4 sm:mb-6 pb-3 sm:pb-4 border-b border-neutral-200 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div className="flex flex-col gap-1">
+                    <h3 className="text-base sm:text-xl font-semibold text-neutral-800">
+                        {formatDate(weekStartDate)} — {formatDate(weekEnd)}
+                    </h3>
+                    <p className="text-[11px] sm:text-sm text-neutral-500">
+                        Week of {weekStartDate.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                    </p>
+                </div>
+                <div className="flex gap-2">
+                    {highlightIndex !== -1 && (
+                        <span className="px-3 py-1 bg-primary-100 text-primary-700 text-[10px] sm:text-xs font-medium rounded-full">
+                            📍 {highlightDate?.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' })}
+                        </span>
+                    )}
                 </div>
             </div>
 
-            {/* Day Labels */}
-            <div className="grid grid-cols-[240px_repeat(7,1fr)] gap-2 mb-4 px-4 items-center">
-                <div className="text-xs font-medium text-neutral-500 uppercase tracking-wider pl-2">Goal</div>
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
-                    <button
-                        key={day}
-                        onClick={() => handleDayClick(index)}
-                        className={`text-xs font-medium text-center transition-all duration-200 rounded py-2 ${index === highlightIndex
-                            ? 'text-primary-700 bg-primary-100 font-bold'
-                            : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'
-                            }`}
-                    >
-                        {day}
-                    </button>
-                ))}
-            </div>
+            {/* Internal Scroll Container for Timeline Grid */}
+            <div className="flex-1 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
+                {/* Day Labels */}
+                <div className="grid grid-cols-[1fr_repeat(7,32px)] sm:grid-cols-[240px_repeat(7,1fr)] gap-1 sm:gap-2 mb-4 px-1 sm:px-4 items-center">
+                    <div className="text-[10px] sm:text-xs font-medium text-neutral-500 uppercase tracking-wider pl-1 sm:pl-2">Goal</div>
+                    {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
+                        <button
+                            key={index}
+                            onClick={() => handleDayClick(index)}
+                            className={`text-[10px] sm:text-xs font-medium text-center transition-all duration-200 rounded py-2 ${index === highlightIndex
+                                ? 'text-primary-700 bg-primary-100 font-bold'
+                                : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'
+                                }`}
+                        >
+                            {day}
+                        </button>
+                    ))}
+                </div>
 
-            {/* Goals */}
-            <div className="space-y-4">
-                {goals.length === 0 ? (
-                    <div className="text-center py-12 text-neutral-400">
-                        <p className="text-lg mb-2">No goals yet</p>
-                        <p className="text-sm">Add goals from the sidebar to start tracking.</p>
-                    </div>
-                ) : (
-                    goals
-                        .filter(goal => {
-                            const weekStart = new Date(weekStartDate)
-                            weekStart.setUTCHours(0, 0, 0, 0)
+                {/* Goals */}
+                <div className="space-y-4">
+                    {goals.length === 0 ? (
+                        <div className="text-center py-12 text-neutral-400">
+                            <p className="text-lg mb-2">No goals yet</p>
+                            <p className="text-sm">Add goals from the sidebar to start tracking.</p>
+                        </div>
+                    ) : (
+                        goals
+                            .filter(goal => {
+                                const weekStart = new Date(weekStartDate)
+                                weekStart.setUTCHours(0, 0, 0, 0)
 
-                            const weekEnd = new Date(weekStartDate)
-                            weekEnd.setDate(weekEnd.getDate() + 6)
-                            weekEnd.setUTCHours(23, 59, 59, 999)
+                                const weekEnd = new Date(weekStartDate)
+                                weekEnd.setDate(weekEnd.getDate() + 6)
+                                weekEnd.setUTCHours(23, 59, 59, 999)
 
-                            const isDeleted = !!goal.deletedAt
-                            if (isDeleted) return false
+                                const isDeleted = !!goal.deletedAt
+                                if (isDeleted) return false
 
-                            const activeFromDate = goal.activeFrom ? new Date(goal.activeFrom) : null
-                            const activeAfterWeek = activeFromDate && !isNaN(activeFromDate.getTime()) && activeFromDate > weekEnd
-                            if (activeAfterWeek) return false
+                                const activeFromDate = goal.activeFrom ? new Date(goal.activeFrom) : null
+                                const activeAfterWeek = activeFromDate && !isNaN(activeFromDate.getTime()) && activeFromDate > weekEnd
+                                if (activeAfterWeek) return false
 
-                            const isArchivedThisWeek = goal.archivedFromWeek && new Date(goal.archivedFromWeek) <= weekStartDate
-                            if (isArchivedThisWeek) return false
+                                const isArchivedThisWeek = goal.archivedFromWeek && new Date(goal.archivedFromWeek) <= weekStartDate
+                                if (isArchivedThisWeek) return false
 
-                            return true
-                        })
-                        .map((goal) => (
-                            <GoalRow
-                                key={goal.id}
-                                goalId={goal.id}
-                                goalName={goal.name}
-                                goalSymbol={goal.symbol}
-                                weekStartDate={weekStartIso}
-                                defaultTarget={goal.weeklyTarget}
-                                highlightIndex={highlightIndex}
-                                goalActiveFrom={goal.activeFrom}
-                            />
-                        ))
-                )}
+                                return true
+                            })
+                            .map((goal) => (
+                                <GoalRow
+                                    key={goal.id}
+                                    goalId={goal.id}
+                                    goalName={goal.name}
+                                    goalSymbol={goal.symbol}
+                                    weekStartDate={weekStartIso}
+                                    defaultTarget={goal.weeklyTarget}
+                                    highlightIndex={highlightIndex}
+                                    goalActiveFrom={goal.activeFrom}
+                                />
+                            ))
+                    )}
+                </div>
             </div>
         </div>
     )
