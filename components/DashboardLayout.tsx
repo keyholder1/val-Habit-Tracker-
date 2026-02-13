@@ -66,6 +66,11 @@ export default function DashboardLayout() {
         setSelectedDate(date)
     }, [])
 
+    const handleHistoryDateSelect = useCallback((date: Date) => {
+        setSelectedDate(date)
+        setIsMigraineModalOpen(true)
+    }, [])
+
     const selectedWeekStart = useMemo(() => getWeekStart(selectedDate), [selectedDate])
     const activeGoals = goals
 
@@ -257,7 +262,7 @@ export default function DashboardLayout() {
                 <VirtualDiaryPanel
                     isOpen={isDiaryOpen}
                     onClose={() => setIsDiaryOpen(false)}
-                    onDateSelect={handleDateSelect}
+                    onDateSelect={handleHistoryDateSelect}
                     refreshTrigger={migraineDataVersion}
                 />
             )}
