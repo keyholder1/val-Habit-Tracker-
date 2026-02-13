@@ -53,18 +53,20 @@ export default function CalendarDayWater({
                 ['--tw-ring-color' as any]: theme.primaryColor
             }}
         >
-            {/* 1. Base Background Layer (Bottom) */}
+            {/* 1. Base Background Layer (Bottom) - z-0 */}
             <div className={`absolute inset-0 z-0 ${isCurrentMonth ? 'bg-white/40' : 'bg-neutral-50/30'}`} />
 
-            {/* 2. Water Fill Layer (Middle) */}
+            {/* 2. Water Fill Layer (Middle) - z-1 */}
             <div
-                className="absolute bottom-0 left-0 right-0 origin-bottom transition-transform duration-[800ms] ease-out-cubic will-change-transform z-0"
+                className="absolute bottom-0 left-0 right-0 transition-all duration-[800ms] ease-out-cubic z-1"
                 style={{
-                    height: '100%',
-                    transform: `scaleY(${scaleValue})`,
+                    height: `${safePercent}%`, // Direct height control
                     ...finalWaterStyle
                 }}
-            />
+            >
+                {/* Optional: Add a top "surface" line for better visibility */}
+                <div className="w-full h-[1px] bg-black/5 absolute top-0 left-0" />
+            </div>
 
             {/* 3. Content Layer (Top) */}
             <div className="relative z-10 flex flex-col h-full p-1">

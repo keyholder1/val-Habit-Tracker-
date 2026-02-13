@@ -233,6 +233,7 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
                     // Corporate: No emojis in Month View
 
                     // Corporate: No emojis in Month View
+                    if (isToday) console.log(`🌊 [Debug] Today: ${completionRate.toFixed(1)}% | Color: ${waterColor}`)
 
                     return (
                         <CalendarDayWater
