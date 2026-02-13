@@ -152,9 +152,9 @@ export default function DashboardLayout() {
                 </div>
             </header>
 
-            <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-8 relative z-10 overflow-x-hidden">
+            <main className="flex-1 max-w-[1600px] w-full mx-auto px-4 sm:px-6 py-4 sm:py-8 pb-28 lg:pb-8 relative z-10 overflow-x-hidden">
                 {viewMode === 'month' ? (
-                    <div className="h-[calc(100vh-140px)]">
+                    <div className="h-[calc(100vh-140px)] lg:h-[calc(100vh-140px)] max-lg:h-[calc(100vh-220px)]">
                         <BigCalendar
                             onDateSelect={handleDateSelect}
                             goals={goals}
@@ -217,7 +217,7 @@ export default function DashboardLayout() {
                 )}
             </main>
 
-            <div className="fixed bottom-8 right-8 flex flex-col items-end gap-4 z-40">
+            <div className="fixed bottom-28 right-6 lg:bottom-8 lg:right-8 flex flex-col items-end gap-4 z-40">
                 {showMigraineFeatures && (
                     <>
                         <button

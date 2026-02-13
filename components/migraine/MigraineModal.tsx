@@ -32,7 +32,7 @@ export default function MigraineModal({ isOpen, onClose, date, onEntrySaved }: M
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+                        className="fixed inset-0 bg-black/30 backdrop-blur-sm z-[70] flex items-center justify-center p-4"
                     />
 
                     {/* Modal Content */}
@@ -40,7 +40,7 @@ export default function MigraineModal({ isOpen, onClose, date, onEntrySaved }: M
                         initial={{ opacity: 0, scale: 0.95, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.95, y: 20 }}
-                        className="fixed inset-0 z-50 pointer-events-none flex items-center justify-center p-4"
+                        className="fixed inset-0 z-[70] pointer-events-none flex items-center justify-center p-4"
                     >
                         <div className="bg-white rounded-2xl shadow-xl w-full max-w-lg pointer-events-auto h-auto max-h-[90vh] overflow-hidden flex flex-col">
                             {/* Header with Close Button */}

@@ -110,14 +110,14 @@ function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect 
 
             {/* Internal Scroll Container for Timeline Grid */}
             <div className="flex-1 overflow-y-auto pr-1 -mr-1 custom-scrollbar">
-                {/* Day Labels */}
-                <div className="grid grid-cols-[1fr_repeat(7,32px)] sm:grid-cols-[240px_repeat(7,1fr)] gap-1 sm:gap-2 mb-4 px-1 sm:px-4 items-center">
-                    <div className="text-[10px] sm:text-xs font-medium text-neutral-500 uppercase tracking-wider pl-1 sm:pl-2">Goal</div>
+                {/* Day Labels — hidden on mobile (shown inline in GoalRow instead) */}
+                <div className="hidden sm:grid sm:grid-cols-[240px_repeat(7,1fr)] gap-2 mb-4 px-4 items-center">
+                    <div className="text-xs font-medium text-neutral-500 uppercase tracking-wider pl-2">Goal</div>
                     {['M', 'T', 'W', 'T', 'F', 'S', 'S'].map((day, index) => (
                         <button
                             key={index}
                             onClick={() => handleDayClick(index)}
-                            className={`text-[10px] sm:text-xs font-medium text-center transition-all duration-200 rounded py-2 ${index === highlightIndex
+                            className={`text-xs font-medium text-center transition-all duration-200 rounded py-2 ${index === highlightIndex
                                 ? 'text-primary-700 bg-primary-100 font-bold'
                                 : 'text-neutral-500 hover:bg-neutral-100 hover:text-neutral-700'
                                 }`}

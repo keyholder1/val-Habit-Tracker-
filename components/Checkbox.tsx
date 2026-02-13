@@ -11,7 +11,7 @@ interface CheckboxProps {
 
 export default function Checkbox({ checked, onChange, disabled }: CheckboxProps) {
     const { isMobile } = useBreakpoint()
-    const size = isMobile ? 'w-4 h-4' : 'w-6 h-6'
+    const size = isMobile ? 'w-7 h-7' : 'w-6 h-6'
 
     return (
         <motion.button
