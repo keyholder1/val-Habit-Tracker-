@@ -13,6 +13,7 @@ import {
     StreakData,
     TimeOfWeekCell
 } from './types'
+import { generateCalendarHeatmap, generateTimeOfWeekHeatmap } from './generateHeatmapData'
 
 // In-memory cache for ultra-fast repeated loads (Private production: 2 users)
 const cache = new Map<string, { data: AnalyticsPayload; timestamp: number }>()
@@ -257,52 +258,7 @@ function aggregateMonthly(daily: DailyRecord[], months: number): MonthlyTrendPoi
         .slice(-months)
 }
 
-function generateCalendarHeatmap(daily: DailyRecord[], range: number, year?: number): HeatmapCell[] {
-    const byDay = new Map<string, number>()
-    for (const r of daily) {
-        const d = new Date(r.date)
-        const key = d.toISOString().split('T')[0]
-        if (r.completed) {
-            byDay.set(key, (byDay.get(key) || 0) + 1)
-        }
-    }
-    return Array.from(byDay.entries()).map(([day, count]) => ({
-        day,
-        intensity: count === 0 ? 0 : count <= 2 ? 1 : count <= 4 ? 2 : count <= 6 ? 3 : 4
-    }))
-}
-
-function generateTimeOfWeekHeatmap(daily: DailyRecord[]): TimeOfWeekCell[] {
-    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-    const result: TimeOfWeekCell[] = []
-
-    // Group by day of week and goal
-    const grouped = new Map<string, { completed: number; total: number }>()
-
-    for (const r of daily) {
-        const date = new Date(r.date)
-        let dayIdx = date.getUTCDay() - 1
-        if (dayIdx === -1) dayIdx = 6
-        const dayName = days[dayIdx]
-        const key = `${dayName}:${r.goalName}`
-
-        const stats = grouped.get(key) || { completed: 0, total: 0 }
-        stats.total++
-        if (r.completed) stats.completed++
-        grouped.set(key, stats)
-    }
-
-    for (const [key, stats] of grouped.entries()) {
-        const [day, goalName] = key.split(':')
-        result.push({
-            day,
-            goalName,
-            completion: Math.round((stats.completed / stats.total) * 100)
-        })
-    }
-
-    return result
-}
+// Local heatmap functions removed in favor of lib/analytics/generateHeatmapData.ts
 
 function calculateStreaks(daily: DailyRecord[], goals: any[]): StreakData[] {
     const streaks: StreakData[] = []
