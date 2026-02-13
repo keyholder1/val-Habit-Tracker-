@@ -232,16 +232,7 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
 
                     // Corporate: No emojis in Month View
 
-                    if (isToday) {
-                        // Stringify the object so it's readable in plain text
-                        const logData = JSON.stringify({
-                            date: dateIso,
-                            data: dayData || 'UNDEFINED',
-                            stats: { completionRate, waterColor }
-                        }, null, 2)
-
-                        console.log('🌊 [BigCalendar] TODAY Data (Please Copy This):\n' + logData)
-                    }
+                    // Corporate: No emojis in Month View
 
                     return (
                         <CalendarDayWater
