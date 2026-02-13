@@ -9,9 +9,10 @@ interface MigraineModalProps {
     isOpen: boolean
     onClose: () => void
     date: Date
+    onEntrySaved?: () => void
 }
 
-export default function MigraineModal({ isOpen, onClose, date }: MigraineModalProps) {
+export default function MigraineModal({ isOpen, onClose, date, onEntrySaved }: MigraineModalProps) {
     const [mounted, setMounted] = useState(false)
 
     useEffect(() => {
@@ -60,7 +61,7 @@ export default function MigraineModal({ isOpen, onClose, date }: MigraineModalPr
 
                             {/* Scrollable Content */}
                             <div className="overflow-y-auto flex-1">
-                                <MigraineDiaryPanel date={date} />
+                                <MigraineDiaryPanel date={date} onSave={onEntrySaved} />
                             </div>
                         </div>
                     </motion.div>

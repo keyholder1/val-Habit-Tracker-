@@ -17,9 +17,10 @@ interface VirtualDiaryPanelProps {
     isOpen: boolean
     onClose: () => void
     onDateSelect: (date: Date) => void
+    refreshTrigger?: number // Increment to reload
 }
 
-export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect }: VirtualDiaryPanelProps) {
+export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect, refreshTrigger = 0 }: VirtualDiaryPanelProps) {
     const [entries, setEntries] = useState<MigraineEntry[]>([])
     const [page, setPage] = useState(1)
     const [loading, setLoading] = useState(false)
@@ -60,12 +61,12 @@ export default function VirtualDiaryPanel({ isOpen, onClose, onDateSelect }: Vir
         }
     }, [severityMin, severityMax, searchTerm]) // eslint-disable-line react-hooks/exhaustive-deps
 
-    // Reset and load when filters change or panel opens
+    // Reset and load when filters change or panel opens or refreshTrigger changes
     useEffect(() => {
         if (isOpen) {
             loadEntries(1, true)
         }
-    }, [isOpen, severityMin, severityMax, searchTerm]) // loadEntries depends on these, but we call with specific page logic.
+    }, [isOpen, severityMin, severityMax, searchTerm, refreshTrigger]) // Added refreshTrigger dependency
 
     const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
         const { scrollTop, clientHeight, scrollHeight } = e.currentTarget

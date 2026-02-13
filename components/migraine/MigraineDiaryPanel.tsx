@@ -15,11 +15,12 @@ interface MigraineEntry {
 
 interface MigraineDiaryPanelProps {
     date: Date
+    onSave?: () => void
 }
 
 // MIGRAINE_TYPES removed
 
-export default function MigraineDiaryPanel({ date }: MigraineDiaryPanelProps) {
+export default function MigraineDiaryPanel({ date, onSave }: MigraineDiaryPanelProps) {
     const [entry, setEntry] = useState<Partial<MigraineEntry>>({
         severity: 0,
         // type removed
@@ -85,13 +86,14 @@ export default function MigraineDiaryPanel({ date }: MigraineDiaryPanelProps) {
                 const saved = await res.json()
                 setEntry(saved)
                 setLastSaved(new Date())
+                if (onSave) onSave() // Trigger parent refresh
             }
         } catch (err) {
             console.error('Failed to save', err)
         } finally {
             setSaving(false)
         }
-    }, [dateIso, entry])
+    }, [dateIso, entry, onSave])
 
     const handleChange = (field: keyof MigraineEntry, value: any) => {
         setEntry(prev => ({ ...prev, [field]: value }))

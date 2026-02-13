@@ -53,6 +53,13 @@ export default function DashboardLayout() {
     const [isDiaryOpen, setIsDiaryOpen] = useState(false)
     const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false)
 
+    // Data sync version for migraine history
+    const [migraineDataVersion, setMigraineDataVersion] = useState(0)
+    const refreshMigraineData = useCallback(() => {
+        setMigraineDataVersion(v => v + 1)
+        console.log('🔄 [Dashboard] Refreshing migraine history...')
+    }, [])
+
     const handleDateSelect = useCallback((date: Date) => {
         setSelectedDate(date)
     }, [])
@@ -240,6 +247,7 @@ export default function DashboardLayout() {
                     isOpen={isMigraineModalOpen}
                     onClose={() => setIsMigraineModalOpen(false)}
                     date={selectedDate}
+                    onEntrySaved={refreshMigraineData}
                 />
             )}
 
@@ -248,6 +256,7 @@ export default function DashboardLayout() {
                     isOpen={isDiaryOpen}
                     onClose={() => setIsDiaryOpen(false)}
                     onDateSelect={handleDateSelect}
+                    refreshTrigger={migraineDataVersion}
                 />
             )}
 
