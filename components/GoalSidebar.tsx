@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from 'react'
 import { Goal, useGoals } from '@/hooks/useGoals'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 
 export interface GoalSidebarProps {
     selectedDate: Date
@@ -18,6 +20,8 @@ const getWeekStart = (date: Date): Date => {
 
 export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
     const { goals, createGoal, updateGoal, archiveGoal, deleteGoal } = useGoals()
+    const { isMobile } = useBreakpoint()
+    const isTouch = useIsTouchDevice()
     const [showAddForm, setShowAddForm] = useState(false)
     const [newGoalName, setNewGoalName] = useState('')
     const [newGoalSymbol, setNewGoalSymbol] = useState('')
@@ -108,16 +112,16 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
     }) || []
 
     return (
-        <div className="glass rounded-2xl shadow-soft-lg p-6 sticky top-24">
-            <h3 className="text-xl font-bold mb-4 text-neutral-800">Your Goals</h3>
+        <div className={`glass rounded-2xl shadow-soft-lg p-4 sm:p-6 ${isMobile ? '' : 'sticky top-24'}`}>
+            <h3 className="text-lg sm:text-xl font-bold mb-4 text-neutral-800">Your Goals</h3>
 
             <div className="space-y-4">
-                {/* Add Goal Section - Always visible now */}
+                {/* Add Goal Section */}
                 <div className="bg-white/40 rounded-xl p-3 border border-dashed border-neutral-300 hover:border-primary-400 transition-colors">
                     {!showAddForm ? (
                         <button
                             onClick={() => setShowAddForm(true)}
-                            className="w-full py-2 flex items-center justify-center gap-2 text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors"
+                            className="w-full py-4 sm:py-2 flex items-center justify-center gap-2 text-sm font-medium text-neutral-600 hover:text-primary-600 transition-colors"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
@@ -132,7 +136,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                     placeholder="Goal name..."
                                     value={newGoalName}
                                     onChange={(e) => setNewGoalName(e.target.value)}
-                                    className="flex-1 p-2 border rounded-lg text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
+                                    className="flex-1 p-3 sm:p-2 border rounded-lg text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
                                     autoFocus
                                 />
                                 <input
@@ -141,21 +145,14 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                     value={newGoalSymbol}
                                     onFocus={(e) => e.target.select()}
                                     onMouseUp={(e) => {
-                                        // Prevents the cursor from landing in the middle on click
                                         e.preventDefault();
                                         e.currentTarget.select();
                                     }}
-                                    onKeyDown={(e) => {
-                                        if (e.key === 'Backspace' || e.key === 'Delete') {
-                                            e.preventDefault()
-                                            setNewGoalSymbol('')
-                                        }
-                                    }}
                                     onChange={(e) => setNewGoalSymbol(e.target.value)}
-                                    className={`w-16 p-2 border rounded-lg text-center text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${newGoalSymbol ? 'caret-transparent' : ''}`}
+                                    className={`w-16 p-3 sm:p-2 border rounded-lg text-center text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${newGoalSymbol ? 'caret-transparent' : ''}`}
                                 />
                             </div>
-                            <div className="space-y-2">
+                            <div className="space-y-3 sm:space-y-2">
                                 <div className="flex items-center gap-2">
                                     <label className="text-xs text-neutral-600 w-12 text-right">Target:</label>
                                     <input
@@ -164,7 +161,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                         max="7"
                                         value={newGoalTarget}
                                         onChange={(e) => setNewGoalTarget(parseInt(e.target.value) || 1)}
-                                        className="flex-1 p-1 border rounded text-sm focus:ring-1 focus:ring-primary-400 outline-none"
+                                        className="flex-1 p-2 sm:p-1 border rounded text-sm focus:ring-1 focus:ring-primary-400 outline-none"
                                     />
                                     <span className="text-xs text-neutral-500">/week</span>
                                 </div>
@@ -174,7 +171,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                         type="date"
                                         value={newGoalActiveFrom}
                                         onChange={(e) => setNewGoalActiveFrom(e.target.value)}
-                                        className="flex-1 p-1 border rounded text-sm focus:ring-1 focus:ring-primary-400 outline-none"
+                                        className="flex-1 p-2 sm:p-1 border rounded text-sm focus:ring-1 focus:ring-primary-400 outline-none"
                                     />
                                 </div>
                             </div>
@@ -182,14 +179,14 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                 <button
                                     type="button"
                                     onClick={() => setShowAddForm(false)}
-                                    className="px-3 py-1.5 text-xs font-medium text-neutral-500 hover:text-neutral-700 transition-colors"
+                                    className="px-4 py-3 sm:px-3 sm:py-1.5 text-xs font-medium text-neutral-500"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
                                     disabled={!newGoalName.trim() || createGoal.isPending}
-                                    className="px-3 py-1.5 bg-primary-500 text-white rounded-lg text-xs font-medium hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm transition-all active:scale-95"
+                                    className="px-4 py-3 sm:px-3 sm:py-1.5 bg-primary-500 text-white rounded-lg text-xs font-medium hover:bg-primary-600 shadow-sm"
                                 >
                                     {createGoal.isPending ? 'Adding...' : 'Add Goal'}
                                 </button>
@@ -205,7 +202,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                         filteredGoals.map((goal) => (
                             <div
                                 key={goal.id}
-                                className="bg-white/50 rounded-xl p-3 hover:bg-white/80 transition-all group border border-transparent hover:border-neutral-200"
+                                className="bg-white/50 rounded-xl p-3 sm:p-3 hover:bg-white/80 transition-all group border border-transparent hover:border-neutral-200"
                             >
                                 {editingId === goal.id ? (
                                     <div className="space-y-3">
@@ -217,20 +214,14 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                                     e.preventDefault();
                                                     e.currentTarget.select();
                                                 }}
-                                                onKeyDown={(e) => {
-                                                    if (e.key === 'Backspace' || e.key === 'Delete') {
-                                                        e.preventDefault()
-                                                        setEditSymbol('')
-                                                    }
-                                                }}
                                                 onChange={(e) => setEditSymbol(e.target.value)}
-                                                className={`w-14 p-1 text-center border rounded text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${editSymbol ? 'caret-transparent' : ''}`}
+                                                className={`w-14 p-2 text-center border rounded text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${editSymbol ? 'caret-transparent' : ''}`}
                                                 maxLength={8}
                                             />
                                             <input
                                                 value={editName}
                                                 onChange={(e) => setEditName(e.target.value)}
-                                                className="flex-1 p-1 border rounded text-sm"
+                                                className="flex-1 p-2 border rounded text-base sm:text-sm"
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
@@ -241,32 +232,32 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                                 max="7"
                                                 value={editTarget}
                                                 onChange={(e) => setEditTarget(parseInt(e.target.value) || 7)}
-                                                className="w-16 px-2 py-1 border border-neutral-300 rounded text-sm"
+                                                className="w-16 px-2 py-2 sm:py-1 border border-neutral-300 rounded text-sm"
                                             />
                                             <span className="text-xs text-neutral-500">/week</span>
                                         </div>
                                         <div className="flex justify-end gap-2">
-                                            <button onClick={saveEdit} className="text-xs text-primary-600 font-medium">Save</button>
-                                            <button onClick={cancelEdit} className="text-xs text-neutral-500">Cancel</button>
+                                            <button onClick={saveEdit} className="px-3 py-2 text-xs text-primary-600 font-black uppercase tracking-widest">Save</button>
+                                            <button onClick={cancelEdit} className="px-3 py-2 text-xs text-neutral-500 font-black uppercase tracking-widest">Cancel</button>
                                         </div>
                                     </div>
                                 ) : (
-                                    <div className="flex items-start justify-between">
-                                        <div className="flex-1 cursor-pointer" onClick={() => startEditing(goal)}>
-                                            <p className="font-semibold text-neutral-800 text-sm flex items-center gap-2">
-                                                <span className="text-base" role="button" title="Click to edit">{goal.symbol || ''}</span>
+                                    <div className="flex items-center justify-between min-h-[44px]">
+                                        <div className="flex-1 cursor-pointer py-1" onClick={() => startEditing(goal)}>
+                                            <p className="font-semibold text-neutral-800 text-sm sm:text-sm flex items-center gap-2">
+                                                <span className="text-lg sm:text-base" role="button">{goal.symbol || ''}</span>
                                                 {goal.name}
                                             </p>
-                                            <p className="text-xs text-neutral-500 mt-1">
+                                            <p className="text-[10px] sm:text-xs text-neutral-500 mt-0.5">
                                                 Target: <span className="font-bold text-neutral-600">{goal.weeklyTarget}</span>/week
                                             </p>
                                         </div>
                                         <button
                                             onClick={(e) => { e.stopPropagation(); handleArchiveGoal(goal.id); }}
-                                            className="opacity-0 group-hover:opacity-100 text-neutral-400 hover:text-red-500 transition-all"
+                                            className={`p-2 transition-all ${isTouch ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'} text-neutral-400 hover:text-red-500`}
                                             title="Archive goal"
                                         >
-                                            <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <svg className="w-5 h-5 sm:w-4 sm:h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4" />
                                             </svg>
                                         </button>

@@ -14,6 +14,10 @@ import Link from 'next/link'
 import { isMigraineUser, isProjectUser } from '@/lib/whitelist'
 import ProjectDiaryPanel from './project/ProjectDiaryPanel'
 import { useGoals, Goal } from '@/hooks/useGoals'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
+import BottomNav from './navigation/BottomNav'
+import { motion, AnimatePresence } from 'framer-motion'
 
 
 type ViewMode = 'month' | 'week'
@@ -28,6 +32,8 @@ export default function DashboardLayout() {
 
     const [viewMode, setViewMode] = useState<ViewMode>('week')
     const { goals: goalsData, isLoading: goalsLoading, error: goalsError } = useGoals()
+    const { isMobile, breakpoint } = useBreakpoint()
+    const isTouch = useIsTouchDevice()
 
     // Debug logging for goals data
     useEffect(() => {
@@ -52,6 +58,7 @@ export default function DashboardLayout() {
     const [isMigraineModalOpen, setIsMigraineModalOpen] = useState(false)
     const [isDiaryOpen, setIsDiaryOpen] = useState(false)
     const [isProjectPanelOpen, setIsProjectPanelOpen] = useState(false)
+    const [isGoalSidebarOpen, setIsGoalSidebarOpen] = useState(false)
 
     // Data sync version for migraine history
     const [migraineDataVersion, setMigraineDataVersion] = useState(0)
@@ -101,12 +108,20 @@ export default function DashboardLayout() {
             {/* Header */}
             <header className="glass border-b border-neutral-200/50 sticky top-0 z-50">
                 <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-8">
-                        <h1 className="text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                    <div className="flex items-center gap-4 sm:gap-8">
+                        {isMobile && (
+                            <button
+                                onClick={() => setIsGoalSidebarOpen(true)}
+                                className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500"
+                            >
+                                ☰
+                            </button>
+                        )}
+                        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
                             Habit Tracker
                         </h1>
 
-                        <div className="flex items-center bg-neutral-100 rounded-lg p-1">
+                        <div className="hidden sm:flex items-center bg-neutral-100 rounded-lg p-1">
                             <button
                                 onClick={() => setViewMode('month')}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'month'
@@ -163,8 +178,9 @@ export default function DashboardLayout() {
                         />
                     </div>
                 ) : (
-                    <div className="grid grid-cols-12 gap-6 h-full">
-                        <div className="col-span-3 space-y-6">
+                    <div className="flex flex-col lg:grid lg:grid-cols-12 gap-6 h-full">
+                        {/* Sidebar: Hidden on mobile/tablet, shown on desktop (lg+) */}
+                        <div className="hidden lg:block lg:col-span-3 space-y-6">
                             <CalendarPicker
                                 selectedDate={selectedDate}
                                 onDateSelect={handleDateSelect}
@@ -174,22 +190,24 @@ export default function DashboardLayout() {
                             <GoalSidebar selectedDate={selectedDate} />
                         </div>
 
-                        <div className="col-span-6">
+                        {/* Main Content: Full width on mobile/tablet, col-span-9 on desktop */}
+                        {/* If we strictly follow the 6+3 logic, adjust accordingly. Currently it was col-span-6. */}
+                        <div className="w-full lg:col-span-6">
                             <div className="flex items-center justify-between mb-4">
                                 <button
                                     onClick={goToPrevWeek}
                                     className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/60 hover:bg-white/80 text-neutral-600 text-sm font-medium transition-all"
                                 >
-                                    ← Prev Week
+                                    ← <span className="hidden sm:inline">Prev Week</span>
                                 </button>
-                                <h2 className="text-lg font-semibold text-neutral-700">
-                                    {selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+                                <h2 className="text-base sm:text-lg font-semibold text-neutral-700 text-center">
+                                    {selectedDate.toLocaleDateString('en-US', { weekday: isMobile ? 'short' : 'long', month: isMobile ? 'short' : 'long', day: 'numeric' })}
                                 </h2>
                                 <button
                                     onClick={goToNextWeek}
                                     className="flex items-center gap-1 px-3 py-2 rounded-lg bg-white/60 hover:bg-white/80 text-neutral-600 text-sm font-medium transition-all"
                                 >
-                                    Next Week →
+                                    <span className="hidden sm:inline">Next Week</span> →
                                 </button>
                             </div>
 
@@ -206,6 +224,11 @@ export default function DashboardLayout() {
                                     onDateSelect={handleDateSelect}
                                 />
                             )}
+                        </div>
+
+                        {/* Extra space / Placeholder for Analytics summary on Desktop if col-span-3 remains empty */}
+                        <div className="hidden lg:block lg:col-span-3 h-full">
+                            {/* Analytics summary could go here later */}
                         </div>
                     </div>
                 )}
@@ -264,6 +287,54 @@ export default function DashboardLayout() {
                     onClose={() => setIsDiaryOpen(false)}
                     onDateSelect={handleHistoryDateSelect}
                     refreshTrigger={migraineDataVersion}
+                />
+            )}
+
+            {/* Mobile Goal Sidebar Drawer */}
+            <AnimatePresence>
+                {isMobile && isGoalSidebarOpen && (
+                    <div className="fixed inset-0 z-[70] lg:hidden">
+                        <motion.div
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            onClick={() => setIsGoalSidebarOpen(false)}
+                            className="absolute inset-0 bg-black/20 backdrop-blur-sm"
+                        />
+                        <motion.div
+                            initial={{ x: '-100%' }}
+                            animate={{ x: 0 }}
+                            exit={{ x: '-100%' }}
+                            transition={{ type: 'spring', damping: 25, stiffness: 200 }}
+                            className="absolute inset-y-0 left-0 w-[85%] max-w-sm bg-white shadow-2xl p-6 overflow-y-auto"
+                        >
+                            <div className="flex justify-between items-center mb-6">
+                                <h3 className="font-bold text-lg">Goals & Calendar</h3>
+                                <button onClick={() => setIsGoalSidebarOpen(false)} className="p-2 hover:bg-neutral-100 rounded-full">✕</button>
+                            </div>
+                            <div className="space-y-6">
+                                <CalendarPicker
+                                    selectedDate={selectedDate}
+                                    onDateSelect={(d) => {
+                                        handleDateSelect(d)
+                                        setIsGoalSidebarOpen(false)
+                                    }}
+                                    displayMonth={displayMonth}
+                                    onDisplayMonthChange={setDisplayMonth}
+                                />
+                                <GoalSidebar selectedDate={selectedDate} />
+                            </div>
+                        </motion.div>
+                    </div>
+                )}
+            </AnimatePresence>
+
+            {/* Mobile Navigation */}
+            {isMobile && (
+                <BottomNav
+                    activeView={viewMode}
+                    onViewChange={setViewMode}
+                    onDiaryToggle={() => setIsDiaryOpen(true)}
                 />
             )}
 

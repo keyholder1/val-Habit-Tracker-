@@ -58,9 +58,10 @@ export default function CalendarDayWater({
 
             {/* 2. Water Fill Layer (Middle) - z-10 */}
             <div
-                className="absolute bottom-0 left-0 right-0 transition-all duration-[800ms] ease-out-cubic z-10"
+                className="absolute bottom-0 left-0 right-0 transition-transform duration-[800ms] ease-out-cubic z-10 origin-bottom will-change-transform"
                 style={{
-                    height: `${safePercent}%`, // Direct height control
+                    height: '100%',
+                    transform: `scaleY(${scaleValue})`,
                     ...finalWaterStyle
                 }}
             >

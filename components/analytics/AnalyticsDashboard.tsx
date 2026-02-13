@@ -2,34 +2,37 @@
 
 import { useState } from 'react'
 import Link from 'next/link'
+import dynamic from 'next/dynamic'
 import { signOut } from 'next-auth/react'
 import LazyGraph from './LazyGraph'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
 
-import DailyCompletionTrend from './DailyCompletionTrend'
-import WeeklyCompletionTrend from './WeeklyCompletionTrend'
-import MonthlyCompletionTrend from './MonthlyCompletionTrend'
-import YearlyCompletionTrend from './YearlyCompletionTrend'
-import Rolling7DayAvg from './Rolling7DayAvg'
-import Rolling30DayAvg from './Rolling30DayAvg'
-import WeeklyGoalComparison from './WeeklyGoalComparison'
-import MonthlyGoalComparison from './MonthlyGoalComparison'
-import StackedWeeklyCompletion from './StackedWeeklyCompletion'
-import StackedMonthlyCompletion from './StackedMonthlyCompletion'
-import StreakTimeline from './StreakTimeline'
-import LongestStreak from './LongestStreak'
-import MissFrequency from './MissFrequency'
-import ConsistencyRadar from './ConsistencyRadar'
-import CompletionPiePerGoal from './CompletionPiePerGoal'
-import LifetimeContribution from './LifetimeContribution'
-import TargetVsActual from './TargetVsActual'
-import CalendarHeatmap from './CalendarHeatmap'
-import WeeklyDensityHeatmap from './WeeklyDensityHeatmap'
+const DailyCompletionTrend = dynamic(() => import('./DailyCompletionTrend'), { ssr: false })
+const WeeklyCompletionTrend = dynamic(() => import('./WeeklyCompletionTrend'), { ssr: false })
+const MonthlyCompletionTrend = dynamic(() => import('./MonthlyCompletionTrend'), { ssr: false })
+const YearlyCompletionTrend = dynamic(() => import('./YearlyCompletionTrend'), { ssr: false })
+const Rolling7DayAvg = dynamic(() => import('./Rolling7DayAvg'), { ssr: false })
+const Rolling30DayAvg = dynamic(() => import('./Rolling30DayAvg'), { ssr: false })
+const WeeklyGoalComparison = dynamic(() => import('./WeeklyGoalComparison'), { ssr: false })
+const MonthlyGoalComparison = dynamic(() => import('./MonthlyGoalComparison'), { ssr: false })
+const StackedWeeklyCompletion = dynamic(() => import('./StackedWeeklyCompletion'), { ssr: false })
+const StackedMonthlyCompletion = dynamic(() => import('./StackedMonthlyCompletion'), { ssr: false })
+const StreakTimeline = dynamic(() => import('./StreakTimeline'), { ssr: false })
+const LongestStreak = dynamic(() => import('./LongestStreak'), { ssr: false })
+const MissFrequency = dynamic(() => import('./MissFrequency'), { ssr: false })
+const ConsistencyRadar = dynamic(() => import('./ConsistencyRadar'), { ssr: false })
+const CompletionPiePerGoal = dynamic(() => import('./CompletionPiePerGoal'), { ssr: false })
+const LifetimeContribution = dynamic(() => import('./LifetimeContribution'), { ssr: false })
+const TargetVsActual = dynamic(() => import('./TargetVsActual'), { ssr: false })
+const CalendarHeatmap = dynamic(() => import('./CalendarHeatmap'), { ssr: false })
+const WeeklyDensityHeatmap = dynamic(() => import('./WeeklyDensityHeatmap'), { ssr: false })
 
 type Section = 'trends' | 'comparison' | 'consistency' | 'distribution' | 'heatmaps' | 'insights'
 
 export default function AnalyticsDashboard() {
     const [activeSection, setActiveSection] = useState<Section>('distribution')
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
+    const { isMobile } = useBreakpoint()
 
     const sections = [
         { id: 'trends' as Section, name: 'Trends', count: 6 },
@@ -47,7 +50,7 @@ export default function AnalyticsDashboard() {
                 <button
                     key={year}
                     onClick={() => setSelectedYear(year)}
-                    className={`px-4 py-1.5 rounded-lg text-xs font-black tracking-widest transition-all duration-500 ${selectedYear === year
+                    className={`px-3 sm:px-4 py-1.5 rounded-lg text-[10px] sm:text-xs font-black tracking-widest transition-all duration-500 ${selectedYear === year
                         ? 'bg-white text-black shadow-white-glow'
                         : 'text-neutral-600 hover:text-neutral-400 hover:bg-white/5'
                         }`}
@@ -62,44 +65,44 @@ export default function AnalyticsDashboard() {
         <div className="min-h-screen relative bg-[#050505] text-neutral-200">
             {/* Nav Header */}
             <header className="border-b border-white/5 sticky top-0 z-40 bg-black/20 backdrop-blur-xl ring-1 ring-white/5">
-                <div className="max-w-7xl mx-auto px-8 py-5 flex items-center justify-between">
-                    <div className="flex items-center gap-4 group cursor-pointer">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-indigo-500/20 shadow-2xl ring-2 ring-white/10 group-hover:scale-110 transition-transform duration-500">
-                            <span className="text-white text-xl font-black">A</span>
+                <div className="max-w-7xl mx-auto px-4 sm:px-8 py-4 sm:py-5 flex items-center justify-between">
+                    <div className="flex items-center gap-2 sm:gap-4 group cursor-pointer">
+                        <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-xl sm:rounded-2xl bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center shadow-indigo-500/20 shadow-2xl ring-2 ring-white/10 group-hover:scale-110 transition-transform duration-500">
+                            <span className="text-white text-lg sm:text-xl font-black">A</span>
                         </div>
-                        <h1 className="text-2xl font-black bg-gradient-to-r from-white via-white to-neutral-500 bg-clip-text text-transparent tracking-tighter">
-                            ANALYTICS ENGINE
+                        <h1 className="text-lg sm:text-2xl font-black bg-gradient-to-r from-white via-white to-neutral-500 bg-clip-text text-transparent tracking-tighter">
+                            {isMobile ? 'ANALYTICS' : 'ANALYTICS ENGINE'}
                         </h1>
                     </div>
 
-                    <nav className="flex items-center gap-4">
+                    <nav className="flex items-center gap-2 sm:gap-4">
                         {yearSelector}
-                        <div className="h-4 w-[1px] bg-white/10 mx-2" />
+                        <div className="hidden sm:block h-4 w-[1px] bg-white/10 mx-2" />
                         <Link
                             href="/dashboard"
-                            className="px-5 py-2 rounded-xl bg-white/5 hover:bg-white text-neutral-400 hover:text-black text-xs font-black uppercase tracking-widest transition-all duration-500 border border-white/5"
+                            className="px-3 sm:px-5 py-2 rounded-xl bg-white/5 hover:bg-white text-neutral-400 hover:text-black text-[10px] sm:text-xs font-black uppercase tracking-widest transition-all duration-500 border border-white/5"
                         >
-                            Back
+                            {isMobile ? '←' : 'Back'}
                         </Link>
                     </nav>
                 </div>
             </header>
 
-            <main className="max-w-7xl mx-auto px-8 py-12 relative z-10">
+            <main className="max-w-7xl mx-auto px-4 sm:px-8 py-8 sm:py-12 relative z-10">
                 {/* Tabs */}
-                <div className="flex items-center gap-3 mb-16 overflow-x-auto pb-4 no-scrollbar">
+                <div className="flex items-center gap-2 sm:gap-3 mb-8 sm:mb-16 overflow-x-auto pb-4 no-scrollbar">
                     {sections.map((section) => (
                         <button
                             key={section.id}
                             onClick={() => setActiveSection(section.id)}
-                            className={`px-6 py-3.5 rounded-2xl text-[10px] font-black uppercase tracking-[0.25em] transition-all duration-500 border ${activeSection === section.id
+                            className={`px-4 sm:px-6 py-2.5 sm:py-3.5 rounded-xl sm:rounded-2xl text-[9px] sm:text-[10px] font-black uppercase tracking-[0.2em] sm:tracking-[0.25em] transition-all duration-500 border whitespace-nowrap ${activeSection === section.id
                                 ? 'bg-white text-black border-white shadow-[0_0_50px_rgba(255,255,255,0.3)] scale-105'
                                 : 'bg-neutral-900/40 text-neutral-600 border-white/5 hover:border-white/20 hover:text-neutral-300'
                                 }`}
                         >
-                            <span className="flex items-center gap-3">
+                            <span className="flex items-center gap-2 sm:gap-3">
                                 {section.name}
-                                <span className={`px-2 py-0.5 rounded-full text-[9px] ${activeSection === section.id ? 'bg-black text-white' : 'bg-neutral-800 text-neutral-500'}`}>
+                                <span className={`px-1.5 py-0.5 rounded-full text-[8px] sm:text-[9px] ${activeSection === section.id ? 'bg-black text-white' : 'bg-neutral-800 text-neutral-500'}`}>
                                     {section.count}
                                 </span>
                             </span>
@@ -110,46 +113,46 @@ export default function AnalyticsDashboard() {
                 {/* Section Content */}
                 <div key={activeSection} className="animate-in fade-in slide-in-from-bottom-12 duration-1000 fill-mode-both">
                     {activeSection === 'trends' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <DailyCompletionTrend year={selectedYear} />
-                            <WeeklyCompletionTrend year={selectedYear} />
-                            <MonthlyCompletionTrend year={selectedYear} />
-                            <YearlyCompletionTrend year={selectedYear} />
-                            <Rolling7DayAvg year={selectedYear} />
-                            <Rolling30DayAvg year={selectedYear} />
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                            <LazyGraph><DailyCompletionTrend year={selectedYear} /></LazyGraph>
+                            <LazyGraph><WeeklyCompletionTrend year={selectedYear} /></LazyGraph>
+                            <LazyGraph><MonthlyCompletionTrend year={selectedYear} /></LazyGraph>
+                            <LazyGraph><YearlyCompletionTrend year={selectedYear} /></LazyGraph>
+                            <LazyGraph><Rolling7DayAvg year={selectedYear} /></LazyGraph>
+                            <LazyGraph><Rolling30DayAvg year={selectedYear} /></LazyGraph>
                         </div>
                     )}
 
                     {activeSection === 'comparison' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <WeeklyGoalComparison year={selectedYear} />
-                            <MonthlyGoalComparison year={selectedYear} />
-                            <StackedWeeklyCompletion year={selectedYear} />
-                            <StackedMonthlyCompletion year={selectedYear} />
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                            <LazyGraph><WeeklyGoalComparison year={selectedYear} /></LazyGraph>
+                            <LazyGraph><MonthlyGoalComparison year={selectedYear} /></LazyGraph>
+                            <LazyGraph><StackedWeeklyCompletion year={selectedYear} /></LazyGraph>
+                            <LazyGraph><StackedMonthlyCompletion year={selectedYear} /></LazyGraph>
                         </div>
                     )}
 
                     {activeSection === 'consistency' && (
-                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-                            <StreakTimeline year={selectedYear} />
-                            <LongestStreak year={selectedYear} />
-                            <MissFrequency year={selectedYear} />
-                            <ConsistencyRadar year={selectedYear} />
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 sm:gap-10">
+                            <LazyGraph><StreakTimeline year={selectedYear} /></LazyGraph>
+                            <LazyGraph><LongestStreak year={selectedYear} /></LazyGraph>
+                            <LazyGraph><MissFrequency year={selectedYear} /></LazyGraph>
+                            <LazyGraph><ConsistencyRadar year={selectedYear} /></LazyGraph>
                         </div>
                     )}
 
                     {activeSection === 'distribution' && (
-                        <div className="flex flex-col gap-10">
-                            <CompletionPiePerGoal year={selectedYear} />
-                            <LifetimeContribution year={selectedYear} />
-                            <TargetVsActual year={selectedYear} />
+                        <div className="flex flex-col gap-6 sm:gap-10">
+                            <LazyGraph><CompletionPiePerGoal year={selectedYear} /></LazyGraph>
+                            <LazyGraph><LifetimeContribution year={selectedYear} /></LazyGraph>
+                            <LazyGraph><TargetVsActual year={selectedYear} /></LazyGraph>
                         </div>
                     )}
 
                     {activeSection === 'heatmaps' && (
-                        <div className="flex flex-col gap-10">
-                            <CalendarHeatmap year={selectedYear} />
-                            <WeeklyDensityHeatmap year={selectedYear} />
+                        <div className="flex flex-col gap-6 sm:gap-10">
+                            <LazyGraph><CalendarHeatmap year={selectedYear} /></LazyGraph>
+                            <LazyGraph><WeeklyDensityHeatmap year={selectedYear} /></LazyGraph>
                         </div>
                     )}
                 </div>

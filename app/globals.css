@@ -37,6 +37,39 @@ body {
   transition: var(--transition-smooth);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+
+  /* Safe area support for mobile notches */
+  padding-top: env(safe-area-inset-top);
+  padding-bottom: env(safe-area-inset-bottom);
+  padding-left: env(safe-area-inset-left);
+  padding-right: env(safe-area-inset-right);
+
+  /* Touch scrolling smoothness */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Touch-specific overrides via media query fallback */
+@media (pointer: coarse) {
+
+  button,
+  [role="button"],
+  input[type="checkbox"],
+  input[type="radio"] {
+    min-height: 44px;
+    min-width: 44px;
+  }
+}
+
+/* Hide hover effects on touch devices to avoid "sticky" hover states */
+@media (hover: none) {
+  .hover\:shadow-xl:hover {
+    box-shadow: none !important;
+  }
+
+  .hover\:scale-105:hover {
+    transform: none !important;
+  }
 }
 
 h1,

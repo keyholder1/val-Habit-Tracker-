@@ -58,6 +58,8 @@ export default function LiquidEther({
     const rafRef = useRef<number | null>(null);
     const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
     const isVisibleRef = useRef(true);
+    const isScrollingRef = useRef(false);
+    const scrollTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const resizeRafRef = useRef<number | null>(null);
 
     useEffect(() => {
@@ -1057,7 +1059,7 @@ export default function LiquidEther({
                 this.output?.update();
             }
             loop() {
-                if (!this.running) return; // safety
+                if (!this.running || isScrollingRef.current) return;
                 this.render();
                 rafRef.current = requestAnimationFrame(this._loop);
             }
@@ -1109,24 +1111,32 @@ export default function LiquidEther({
         });
         webglRef.current = webgl;
 
+        const isMobileDevice = typeof window !== 'undefined' && window.matchMedia('(max-width: 768px)').matches;
+
         const applyOptionsFromProps = () => {
             if (!webglRef.current) return;
             const sim = webglRef.current.output?.simulation;
             if (!sim) return;
+
+            // Performance Throttling for Mobile
+            const finalRes = isMobileDevice ? Math.min(resolution, 0.35) : resolution;
+            const finalPoisson = isMobileDevice ? Math.min(iterationsPoisson, 16) : iterationsPoisson;
+            const finalViscous = isMobileDevice ? Math.min(iterationsViscous, 16) : iterationsViscous;
+
             const prevRes = sim.options.resolution;
             Object.assign(sim.options, {
                 mouse_force: mouseForce,
                 cursor_size: cursorSize,
                 isViscous,
                 viscous,
-                iterations_viscous: iterationsViscous,
-                iterations_poisson: iterationsPoisson,
+                iterations_viscous: finalViscous,
+                iterations_poisson: finalPoisson,
                 dt,
                 BFECC,
-                resolution,
+                resolution: finalRes,
                 isBounce
             });
-            if (resolution !== prevRes) {
+            if (finalRes !== prevRes) {
                 sim.resize();
             }
         };
@@ -1163,12 +1173,29 @@ export default function LiquidEther({
         ro.observe(container);
         resizeObserverRef.current = ro;
 
+        const handleScroll = () => {
+            if (!isScrollingRef.current) {
+                isScrollingRef.current = true;
+                if (webglRef.current) webglRef.current.pause();
+            }
+            if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
+            scrollTimeoutRef.current = setTimeout(() => {
+                isScrollingRef.current = false;
+                if (webglRef.current && isVisibleRef.current && !document.hidden) {
+                    webglRef.current.start();
+                }
+            }, 100);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+
         // Signal that the simulation is initialized
         if (onLoad) {
             onLoad();
         }
 
         return () => {
+            window.removeEventListener('scroll', handleScroll);
+            if (scrollTimeoutRef.current) clearTimeout(scrollTimeoutRef.current);
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
             if (resizeObserverRef.current) {
                 try {

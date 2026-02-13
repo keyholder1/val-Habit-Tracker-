@@ -6,6 +6,7 @@ import { getTheme, MonthTheme } from '@/lib/theme-config'
 import CalendarDayWater from './CalendarDayWater'
 import { getCompletionColorRGB, getCompletionWaterGradient } from '@/lib/completion-color'
 import CompletionLegend from './CompletionLegend'
+import { useBreakpoint } from '@/hooks/useBreakpoint'
 
 interface BigCalendarProps {
     onDateSelect: (date: Date) => void
@@ -25,6 +26,7 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
     const [monthData, setMonthData] = useState<Record<string, DayData>>({})
     const [loading, setLoading] = useState(true)
     const [migraineEnabled, setMigraineEnabled] = useState(false)
+    const { isMobile } = useBreakpoint()
 
     // Derived values
     const year = displayMonth.getFullYear()
@@ -205,35 +207,24 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
             </div>
 
             {/* Days Header */}
-            <div className="grid grid-cols-7 mb-4">
+            <div className="grid grid-cols-7 mb-2 sm:mb-4">
                 {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(d => (
-                    <div key={d} className="text-right pr-4 text-sm font-medium text-neutral-400 uppercase tracking-wider">
-                        {d}
+                    <div key={d} className="text-right pr-1 sm:pr-4 text-[10px] sm:text-sm font-medium text-neutral-400 uppercase tracking-wider">
+                        {isMobile ? d.charAt(0) : d}
                     </div>
                 ))}
             </div>
 
             {/* Grid - Maximized & Boxy */}
-            <div className="grid grid-cols-7 grid-rows-6 gap-px p-0.5 flex-1 border border-neutral-200/50 rounded-sm shadow-inner min-h-0 overflow-hidden">
+            <div className="grid grid-cols-7 grid-rows-6 gap-px p-0.5 flex-1 border border-neutral-200/50 rounded-sm shadow-inner min-h-[400px] sm:min-h-0 overflow-hidden">
                 {calendarDays.map((cell, i) => {
                     const isCurrentMonth = cell.isCurrentMonth
-                    // Corporate: Show all days, but mute non-current
-                    // No 'invisible' check anymore
-
                     const dateIso = `${cell.date.getFullYear()}-${String(cell.date.getMonth() + 1).padStart(2, '0')}-${String(cell.date.getDate()).padStart(2, '0')}`
                     const isToday = cell.date.getTime() === today.getTime()
                     const dayData = monthData[dateIso]
 
                     const completionRate = dayData?.totalGoals ? (dayData.completedGoals / dayData.totalGoals) * 100 : 0
-                    const completedIds = dayData?.completedGoalIds || []
-
-                    // Dynamic Water Color based on daily completion
                     const waterColor = getCompletionWaterGradient(completionRate)
-
-                    // Corporate: No emojis in Month View
-
-                    // Corporate: No emojis in Month View
-                    if (isToday) console.log(`🌊 [Debug] Today: ${completionRate.toFixed(1)}% | Color: ${waterColor}`)
 
                     return (
                         <CalendarDayWater
@@ -241,15 +232,14 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
                             date={cell.date}
                             completionPercentage={completionRate}
                             theme={monthTheme}
-                            waterColor={waterColor} // New dynamic prop
+                            waterColor={waterColor}
                             isCurrentMonth={cell.isCurrentMonth}
                             isToday={isToday}
                             onClick={() => onDateSelect(cell.date)}
                         >
-                            {/* Inner Content */}
                             {/* Inner Content - Migraine Indicator Only */}
                             {migraineEnabled && dayData?.migraineSeverity && (
-                                <div className="absolute top-2 right-2">
+                                <div className="absolute top-1 right-1 sm:top-2 sm:right-2">
                                     <MigraineIndicator severity={dayData.migraineSeverity} />
                                 </div>
                             )}

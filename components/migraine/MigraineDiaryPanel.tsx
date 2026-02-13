@@ -119,26 +119,28 @@ export default function MigraineDiaryPanel({ date, onSave }: MigraineDiaryPanelP
 
             <div className="space-y-8 flex-1">
                 {/* Severity */}
-                <div className="space-y-3">
-                    <label className="text-sm font-semibold text-neutral-700 flex justify-between">
+                <div className="space-y-4">
+                    <label className="text-sm sm:text-base font-semibold text-neutral-700 flex justify-between">
                         Severity Level
-                        <span className={`px-2 py-0.5 rounded text-xs font-bold ${(entry.severity || 0) > 7 ? 'bg-red-100 text-red-700' :
+                        <span className={`px-2 py-0.5 rounded text-xs sm:text-sm font-bold ${(entry.severity || 0) > 7 ? 'bg-red-100 text-red-700' :
                             (entry.severity || 0) > 4 ? 'bg-orange-100 text-orange-700' :
                                 (entry.severity || 0) > 0 ? 'bg-green-100 text-green-700' : 'bg-neutral-100 text-neutral-500'
                             }`}>
                             {entry.severity || 0} / 10
                         </span>
                     </label>
-                    <input
-                        type="range"
-                        min="0"
-                        max="10"
-                        step="1"
-                        value={entry.severity || 0}
-                        onChange={(e) => handleChange('severity', parseInt(e.target.value))}
-                        className="w-full accent-primary-600 h-2 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
-                    />
-                    <div className="flex justify-between text-xs text-neutral-400 font-medium">
+                    <div className="px-1 py-4 sm:py-0">
+                        <input
+                            type="range"
+                            min="0"
+                            max="10"
+                            step="1"
+                            value={entry.severity || 0}
+                            onChange={(e) => handleChange('severity', parseInt(e.target.value))}
+                            className="w-full h-4 sm:h-2 accent-primary-600 bg-neutral-200 rounded-lg appearance-none cursor-pointer"
+                        />
+                    </div>
+                    <div className="flex justify-between text-[10px] sm:text-xs text-neutral-400 font-medium px-1">
                         <span>None</span>
                         <span>Mild</span>
                         <span>Moderate</span>
@@ -173,21 +175,21 @@ export default function MigraineDiaryPanel({ date, onSave }: MigraineDiaryPanelP
                                 value={entry.foodAfterDay1 || ''}
                                 onChange={(e) => handleChange('foodAfterDay1', e.target.value)}
                                 placeholder="Day 1 (Immediate)"
-                                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:border-primary-400 outline-none"
+                                className="w-full px-4 py-3 sm:px-3 sm:py-2 text-base sm:text-sm border border-neutral-200 rounded-lg sm:rounded-lg focus:border-primary-400 outline-none"
                             />
                             <input
                                 type="text"
                                 value={entry.foodAfterDay2 || ''}
                                 onChange={(e) => handleChange('foodAfterDay2', e.target.value)}
                                 placeholder="Day 2"
-                                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:border-primary-400 outline-none"
+                                className="w-full px-4 py-3 sm:px-3 sm:py-2 text-base sm:text-sm border border-neutral-200 rounded-lg sm:rounded-lg focus:border-primary-400 outline-none"
                             />
                             <input
                                 type="text"
                                 value={entry.foodAfterDay3 || ''}
                                 onChange={(e) => handleChange('foodAfterDay3', e.target.value)}
                                 placeholder="Day 3"
-                                className="w-full px-3 py-2 text-sm border border-neutral-200 rounded-lg focus:border-primary-400 outline-none"
+                                className="w-full px-4 py-3 sm:px-3 sm:py-2 text-base sm:text-sm border border-neutral-200 rounded-lg sm:rounded-lg focus:border-primary-400 outline-none"
                             />
                         </div>
                     </div>
