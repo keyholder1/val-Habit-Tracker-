@@ -32,13 +32,11 @@ function interpolateColor(color1: [number, number, number], color2: [number, num
     return result
 }
 
-// Main function to get RGB string
-export function getCompletionColorRGB(percent: number): string {
-    // Clamp and safeguard against NaN
+// Helper to get raw [r,g,b] values
+export function getCompletionColorValues(percent: number): [number, number, number] {
     const safePercent = Number.isFinite(percent) ? percent : 0
     const p = Math.max(0, Math.min(100, safePercent))
 
-    // Find the stops we are between
     let lower = STOPS[0]
     let upper = STOPS[STOPS.length - 1]
 
@@ -50,22 +48,27 @@ export function getCompletionColorRGB(percent: number): string {
         }
     }
 
-    if (lower === upper) return `rgb(${lower.color.join(',')})`
+    if (lower === upper) return lower.color
 
     const range = upper.percent - lower.percent
     const progress = p - lower.percent
     const factor = range === 0 ? 0 : progress / range
 
-    const rgb = interpolateColor(lower.color, upper.color, factor)
+    return interpolateColor(lower.color, upper.color, factor)
+}
+
+// Main function to get RGB string
+export function getCompletionColorRGB(percent: number): string {
+    const rgb = getCompletionColorValues(percent)
     return `rgb(${rgb.join(',')})`
 }
 
 // Get completion color for Water Fill (CSS Gradient)
 export function getCompletionWaterGradient(percent: number): string {
-    const mainColor = getCompletionColorRGB(percent)
-    // Create a subtle gradient from the main color to a slightly more transparent/lighter version 
-    // for a "liquid" look that still adheres to the data-driven color.
-    return `linear-gradient(to top, ${mainColor} 0%, ${mainColor}cc 100%)`
+    const [r, g, b] = getCompletionColorValues(percent)
+    // Create a subtle gradient from solid at bottom to semi-transparent at top
+    // Using proper RGBA syntax instead of invalid rgb()cc
+    return `linear-gradient(to top, rgba(${r},${g},${b}, 1) 0%, rgba(${r},${g},${b}, 0.5) 100%)`
 }
 
 // Get the full gradient text for the legend bar
