@@ -24,6 +24,13 @@ export default function AppBackground() {
     if (hasTimedOut) return fallback
 
     return (
-        <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#fdfbf7] to-[#f5f5f4]" />
+        <>
+            <div className={`fixed inset-0 z-0 transition-opacity duration-1000 ${isLoading ? 'opacity-0' : 'opacity-100'}`}>
+                <LiquidEther onLoad={() => setIsLoading(false)} />
+            </div>
+            {isLoading && (
+                <div className="fixed inset-0 z-0 bg-gradient-to-br from-[#fdfbf7] to-[#f5f5f4] transition-opacity duration-500" />
+            )}
+        </>
     )
 }

@@ -142,6 +142,9 @@ export default function LiquidEther({
         }
         const Common = new CommonClass();
 
+        // Notify parent that we are loaded
+        if (onLoad) onLoad();
+
         class MouseClass {
             mouseMoved = false;
             coords = new THREE.Vector2();
