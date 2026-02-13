@@ -49,10 +49,9 @@ export default function MigraineDiaryPanel({ date, onSave }: MigraineDiaryPanelP
                         if (data) {
                             setEntry(data)
                         } else {
-                            // Reset form for new entry
+                            // Reset form for new entry - Explicitly set to defaults
                             setEntry({
                                 severity: 0,
-                                // type removed
                                 foodBefore: '',
                                 foodAfterDay1: '',
                                 foodAfterDay2: '',
