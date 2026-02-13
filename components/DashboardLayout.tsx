@@ -55,9 +55,11 @@ export default function DashboardLayout() {
 
     // Data sync version for migraine history
     const [migraineDataVersion, setMigraineDataVersion] = useState(0)
-    const refreshMigraineData = useCallback(() => {
+
+    const handleMigraineSave = useCallback(() => {
         setMigraineDataVersion(v => v + 1)
-        console.log('🔄 [Dashboard] Refreshing migraine history...')
+        setIsMigraineModalOpen(false) // UX Fix: Close modal immediately
+        console.log('✅ [Dashboard] Migraine entry saved. Closing modal & refreshing history.')
     }, [])
 
     const handleDateSelect = useCallback((date: Date) => {
@@ -247,7 +249,7 @@ export default function DashboardLayout() {
                     isOpen={isMigraineModalOpen}
                     onClose={() => setIsMigraineModalOpen(false)}
                     date={selectedDate}
-                    onEntrySaved={refreshMigraineData}
+                    onEntrySaved={handleMigraineSave}
                 />
             )}
 
