@@ -114,7 +114,7 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
         >
             <div className="flex flex-col sm:grid sm:grid-cols-[240px_1fr] gap-3 sm:gap-2 items-stretch sm:items-center">
                 {/* 1. Goal Info Column */}
-                <div className="relative flex items-center gap-2 sm:gap-3 sm:pr-8 sm:border-r border-neutral-100/50">
+                <div className="relative flex items-center gap-2 sm:gap-3 pr-10 sm:pr-8 sm:border-r border-neutral-100/50">
                     <span className="text-lg sm:text-xl bg-neutral-100 p-1.5 sm:p-2 rounded-lg shrink-0">{goalSymbol || ''}</span>
                     <div className="min-w-0 flex-1">
                         <h4 className="font-semibold text-neutral-800 text-sm sm:text-base leading-tight truncate" title={goalName}>
@@ -138,7 +138,7 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
                     {/* Archive Button */}
                     <button
                         onClick={() => setIsArchiveModalOpen(true)}
-                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 absolute right-0 sm:right-2 text-neutral-400 hover:text-red-500 transition-all p-2 sm:p-1"
+                        className="opacity-100 sm:opacity-0 sm:group-hover:opacity-100 absolute right-0 sm:right-2 top-1/2 -translate-y-1/2 text-neutral-400 hover:text-red-500 transition-all p-2 sm:p-1"
                         title="Archive Goal"
                     >
                         <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
