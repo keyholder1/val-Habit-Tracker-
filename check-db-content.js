@@ -35,34 +35,101 @@ async function main() {
     const logCount = await prisma.weeklyLog.count({ where: { userId: user.id } })
     console.log(`Weekly Logs: ${logCount}`)
 
+    // 4. FULL AGGREGATION SIMULATION
+    console.log('\n🔄 Simulating Full API Aggregation...')
+
+    // Fetch all needed data
+    const allGoals = await prisma.goal.findMany({
+        where: { userId: user.id, deletedAt: null }
+    })
+
     const logs = await prisma.weeklyLog.findMany({
         where: { userId: user.id },
         include: { goal: true }
     })
 
+    // Target Date: Today (Local)
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const todayIso = today.toISOString().split('T')[0]
+
+    console.log(`Checking for Date: ${todayIso} (Local: ${today.toString()})`)
+
+    // Calculate Total Goals for Today
+    let activeCount = 0
+    const dayTime = today.getTime()
+
+    for (const goal of allGoals) {
+        console.log(`\nGoal Analysis: ${goal.name}`)
+        console.log(`  activeFrom: ${goal.activeFrom}`)
+        console.log(`  archivedFromWeek: ${goal.archivedFromWeek}`)
+
+        if (goal.activeFrom) {
+            // MATCH THE SERVER LOGIC EXACTLY (Standard Date, not UTC Date yet in route.ts, but let's test safely)
+            // Actually, let's try the FIX directly: Use UTC methods for Active/Archived too
+            const activeDate = new Date(goal.activeFrom)
+            activeDate.setUTCHours(0, 0, 0, 0)
+            const active = activeDate.getTime()
+
+            console.log(`  active (UTC ms): ${active} vs Today: ${dayTime}`)
+            if (dayTime < active) {
+                console.log('  -> SKIPPED (Not active yet)')
+                continue
+            }
+        }
+        if (goal.archivedFromWeek) {
+            const archivedDate = new Date(goal.archivedFromWeek)
+            archivedDate.setUTCHours(0, 0, 0, 0)
+            const archived = archivedDate.getTime()
+
+            console.log(`  archived (UTC ms): ${archived} vs Today: ${dayTime}`)
+            if (dayTime >= archived) {
+                console.log('  -> SKIPPED (Archived)')
+                continue
+            }
+        }
+        activeCount++
+        console.log('  -> COUNTED')
+    }
+    console.log(`Total Active Goals: ${activeCount}`)
+
+    // Calculate Completed Goals using UTC Logic (The Fix)
+    let completedCount = 0
     logs.forEach(log => {
-        console.log(`Goal: ${log.goal.name}`)
-        console.log(`Week Start (DB): ${log.weekStartDate}`)
+        if (log.goal.deletedAt) return
 
-        // Simulate route.ts logic (Local Node Environment = IST)
         const weekStart = new Date(log.weekStartDate)
-        const dayIndex = 0 // Test first day
-        const logDay = new Date(weekStart)
-        logDay.setDate(logDay.getDate() + dayIndex)
-        logDay.setHours(0, 0, 0, 0)
-        const d = logDay.toISOString().split('T')[0]
+        const checkboxStates = log.checkboxStates // as boolean[]
 
-        console.log(`Simulated Key (Local): ${d}`)
+        checkboxStates.forEach((isChecked, dayIndex) => {
+            if (isChecked) {
+                const logDay = new Date(weekStart)
 
-        // Simulate Vercel Logic (UTC Environment) -> We can't easily change Node TZ here but we can infer
-        // If weekStart is 05:30 IST / 00:00 UTC
-        // Local Node (IST): 00:00 UTC = 05:30 IST. setHours(0) -> 00:00 IST = 18:30 UTC Prev Day. Key = Prev Day.
-        // Vercel (UTC): 00:00 UTC. setHours(0) -> 00:00 UTC. Key = Current Day.
+                // --- THE FIX LOGIC ---
+                logDay.setUTCDate(logDay.getUTCDate() + dayIndex)
+                logDay.setUTCHours(0, 0, 0, 0)
+                // ---------------------
 
-        // If weekStart is 00:00 IST / 18:30 UTC Prev Day
-        // Local Node (IST): 00:00 IST. setHours(0) -> 00:00 IST. Key = Current Day.
-        // Vercel (UTC): 18:30 UTC Prev Day. setHours(0) -> 00:00 UTC Prev Day. Key = Prev Day.
+                const d = logDay.toISOString().split('T')[0]
+
+                if (d === todayIso) {
+                    console.log(`  -> Match Found! Goal: ${log.goal.name}`)
+                    completedCount++
+                }
+            }
+        })
     })
+
+    console.log(`Completed Goals: ${completedCount}`)
+    const percent = activeCount > 0 ? (completedCount / activeCount) * 100 : 0
+    console.log(`Completion Rate: ${percent}%`)
+
+    if (percent === 0) {
+        console.log('❌ Logic Result: 0% (No Water)')
+    } else {
+        console.log('✅ Logic Result: >0% (Should have Water)')
+    }
+
 
 }
 

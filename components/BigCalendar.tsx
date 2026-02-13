@@ -106,6 +106,10 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
                     // Convert array to map for O(1) lookup
                     const map: Record<string, DayData> = {}
                     data.forEach(d => { map[d.date] = d })
+
+                    console.log('📊 [BigCalendar] Raw Data:', data)
+                    console.log('📊 [BigCalendar] Mapped Data:', map)
+
                     setMonthData(map)
                 }
             } catch (error) {
@@ -225,6 +229,17 @@ export default React.memo(function BigCalendar({ onDateSelect, goals }: BigCalen
                     const waterColor = getCompletionWaterGradient(completionRate)
 
                     // Corporate: No emojis in Month View
+
+                    if (isToday) {
+                        // Stringify the object so it's readable in plain text
+                        const logData = JSON.stringify({
+                            date: dateIso,
+                            data: dayData || 'UNDEFINED',
+                            stats: { completionRate, waterColor }
+                        }, null, 2)
+
+                        console.log('🌊 [BigCalendar] TODAY Data (Please Copy This):\n' + logData)
+                    }
 
                     return (
                         <CalendarDayWater

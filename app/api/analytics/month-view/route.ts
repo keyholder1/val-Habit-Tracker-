@@ -98,12 +98,16 @@ export async function GET(req: NextRequest) {
 
                 // Goal must be active on this day
                 if (goal.activeFrom) {
-                    const active = new Date(goal.activeFrom).setHours(0, 0, 0, 0)
+                    const activeDate = new Date(goal.activeFrom)
+                    activeDate.setUTCHours(0, 0, 0, 0)
+                    const active = activeDate.getTime()
                     if (dayTime < active) continue
                 }
 
                 if (goal.archivedFromWeek) {
-                    const archived = new Date(goal.archivedFromWeek).setHours(0, 0, 0, 0)
+                    const archivedDate = new Date(goal.archivedFromWeek)
+                    archivedDate.setUTCHours(0, 0, 0, 0)
+                    const archived = archivedDate.getTime()
                     if (dayTime >= archived) continue
                 }
                 activeCount++
