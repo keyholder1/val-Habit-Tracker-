@@ -54,7 +54,13 @@ export function CalendarHeatmap({ year }: { year?: number }) {
         const prevWeek = weeks[index - 1]
         const prevDate = prevWeek?.[0]?.day ? new Date(prevWeek[0].day + 'T00:00:00') : null
 
-        if (index === 0 || (prevDate && date.getMonth() !== prevDate.getMonth())) {
+        if (index === 0) {
+            // When filtering by a specific year, don't show the previous year's month (e.g. Dec) at the start
+            if (year && date.getFullYear() < year) return ''
+            return date.toLocaleDateString('en-US', { month: 'short' })
+        }
+
+        if (prevDate && date.getMonth() !== prevDate.getMonth()) {
             return date.toLocaleDateString('en-US', { month: 'short' })
         }
         return ''
