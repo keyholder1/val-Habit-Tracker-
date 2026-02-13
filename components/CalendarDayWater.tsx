@@ -46,15 +46,17 @@ export default function CalendarDayWater({
             className={`
                 relative overflow-hidden cursor-pointer transition-all duration-200
                 flex flex-col h-full rounded-sm border shadow-sm
-                ${isCurrentMonth ? 'bg-white/40 hover:bg-white/60' : 'bg-neutral-50/30 text-neutral-400'}
                 ${isToday ? 'ring-1 ring-offset-1 z-10' : 'hover:border-neutral-300'}
             `}
             style={{
-                borderColor: isToday ? theme.primaryColor : isCurrentMonth ? '#E5E7EB' : 'transparent', // Neutral-200 for normal days
+                borderColor: isToday ? theme.primaryColor : isCurrentMonth ? '#E5E7EB' : 'transparent',
                 ['--tw-ring-color' as any]: theme.primaryColor
             }}
         >
-            {/* Water Background Layer - Absolute Positioned Bottom Up */}
+            {/* 1. Base Background Layer (Bottom) */}
+            <div className={`absolute inset-0 z-0 ${isCurrentMonth ? 'bg-white/40' : 'bg-neutral-50/30'}`} />
+
+            {/* 2. Water Fill Layer (Middle) */}
             <div
                 className="absolute bottom-0 left-0 right-0 origin-bottom transition-transform duration-[800ms] ease-out-cubic will-change-transform z-0"
                 style={{
@@ -64,8 +66,8 @@ export default function CalendarDayWater({
                 }}
             />
 
-            {/* Date Number - Top Left, Semi-Bold */}
-            <div className="relative z-10 p-1 text-left">
+            {/* 3. Content Layer (Top) */}
+            <div className="relative z-10 flex flex-col h-full p-1">
                 <span
                     className={`
                         text-base font-bold inline-flex items-center justify-center w-8 h-8 rounded-full
@@ -73,16 +75,16 @@ export default function CalendarDayWater({
                     `}
                     style={{
                         backgroundColor: isToday ? theme.primaryColor : 'transparent',
-                        color: isToday ? '#fff' : isCurrentMonth ? '#1F2937' : '#9CA3AF' // Gray-800 vs Gray-400
+                        color: isToday ? '#fff' : isCurrentMonth ? '#1F2937' : '#9CA3AF'
                     }}
                 >
                     {date.getDate()}
                 </span>
-            </div>
 
-            {/* Optional Indicators (Migraine etc) - Bottom Right or Absolute */}
-            <div className="relative z-10 mt-auto p-2">
-                {children}
+                {/* Optional Indicators */}
+                <div className="mt-auto ml-auto">
+                    {children}
+                </div>
             </div>
         </div>
     )
