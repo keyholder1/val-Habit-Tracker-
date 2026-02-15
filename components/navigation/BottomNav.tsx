@@ -44,6 +44,14 @@ export default function BottomNav({ activeView, onViewChange, onDiaryToggle }: B
                     <span className="text-[10px] font-bold uppercase tracking-tighter">Stats</span>
                 </Link>
 
+                <Link
+                    href="/notes"
+                    className="flex flex-col items-center gap-1 flex-1 text-neutral-400 hover:text-primary-600 transition-all"
+                >
+                    <span className="text-xl">📝</span>
+                    <span className="text-[10px] font-bold uppercase tracking-tighter">Notes</span>
+                </Link>
+
                 <button
                     onClick={onDiaryToggle}
                     className="flex flex-col items-center gap-1 flex-1 text-neutral-400 hover:text-primary-600 transition-all"

@@ -142,6 +142,12 @@ export default function DashboardLayout() {
                         >
                             Analytics
                         </Link>
+                        <Link
+                            href="/notes"
+                            className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+                        >
+                            Notes
+                        </Link>
                         <button
                             onClick={() => signOut({ callbackUrl: '/login' })}
                             className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-sm font-medium transition-colors"
