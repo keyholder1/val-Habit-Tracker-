@@ -90,21 +90,23 @@ export default function DashboardLayout() {
         <div className="min-h-screen relative flex flex-col bg-transparent">
             {/* Header */}
             <header className="glass border-b border-neutral-200/50 sticky top-0 z-50">
-                <div className="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
-                    <div className="flex items-center gap-4 sm:gap-8">
+                <div className="max-w-7xl mx-auto px-3 sm:px-6 w-full min-h-[64px] flex items-center justify-between gap-2">
+
+                    {/* LEFT SECTION: Menu + Logo + Desktop Switcher */}
+                    <div className="flex items-center gap-2 min-w-0 flex-1 lg:flex-none">
                         {isMobile && (
                             <button
                                 onClick={() => setIsGoalSidebarOpen(true)}
-                                className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500"
+                                className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500 min-w-[40px] min-h-[40px] flex items-center justify-center shrink-0"
                             >
                                 ☰
                             </button>
                         )}
-                        <h1 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent">
+                        <h1 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-primary-600 to-secondary-600 bg-clip-text text-transparent truncate whitespace-nowrap">
                             Habit Tracker
                         </h1>
 
-                        <div className="hidden sm:flex items-center bg-neutral-100 rounded-lg p-1">
+                        <div className="hidden lg:flex items-center bg-neutral-100 rounded-lg p-1 ml-4">
                             <button
                                 onClick={() => setViewMode('month')}
                                 className={`px-4 py-1.5 rounded-md text-sm font-medium transition-all ${viewMode === 'month'
@@ -126,35 +128,60 @@ export default function DashboardLayout() {
                         </div>
                     </div>
 
-                    <nav className="flex items-center gap-6">
-                        <button
-                            onClick={() => queryClient.invalidateQueries()}
-                            className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500 hover:text-primary-600 transition-colors"
-                            title="Refresh Data"
-                        >
-                            <svg className={`w-5 h-5 ${goalsLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                            </svg>
-                        </button>
+                    {/* CENTER SECTION: Mobile Links (Hidden on Desktop) */}
+                    <div className="flex lg:hidden items-center justify-center gap-3 sm:gap-6 flex-1">
                         <Link
                             href="/analytics"
-                            className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+                            className="text-neutral-700 hover:text-primary-600 font-medium transition-colors flex items-center justify-center min-w-[40px] min-h-[40px]"
+                            title="Analytics"
                         >
-                            Analytics
+                            <span className="block sm:hidden text-xl">📊</span>
+                            <span className="hidden sm:block text-sm">Analytics</span>
                         </Link>
                         <Link
                             href="/notes"
-                            className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+                            className="text-neutral-700 hover:text-primary-600 font-medium transition-colors flex items-center justify-center min-w-[40px] min-h-[40px]"
+                            title="Notes"
                         >
-                            Notes
+                            <span className="block sm:hidden text-xl">📝</span>
+                            <span className="hidden sm:block text-sm">Notes</span>
                         </Link>
+                    </div>
+
+                    {/* RIGHT SECTION: Sign Out + Desktop Nav */}
+                    <div className="flex items-center justify-end flex-1 lg:flex-none gap-2">
+                        {/* Desktop Nav Items */}
+                        <div className="hidden lg:flex items-center gap-6 mr-4">
+                            <button
+                                onClick={() => queryClient.invalidateQueries()}
+                                className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500 hover:text-primary-600 transition-colors"
+                                title="Refresh Data"
+                            >
+                                <svg className={`w-5 h-5 ${goalsLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+                                </svg>
+                            </button>
+                            <Link
+                                href="/analytics"
+                                className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+                            >
+                                Analytics
+                            </Link>
+                            <Link
+                                href="/notes"
+                                className="text-neutral-700 hover:text-primary-600 font-medium transition-colors"
+                            >
+                                Notes
+                            </Link>
+                        </div>
+
                         <button
                             onClick={() => signOut({ callbackUrl: '/login' })}
-                            className="px-4 py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-sm font-medium transition-colors"
+                            className="px-2 sm:px-4 py-1.5 sm:py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap min-h-[32px] sm:min-h-[40px]"
                         >
                             Sign Out
                         </button>
-                    </nav>
+                    </div>
                 </div>
             </header>
 
