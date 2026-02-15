@@ -137,21 +137,21 @@ function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect 
                     ) : (
                         goals
                             .filter(goal => {
+                                // Use local time consistently (getWeekStart uses local setHours)
                                 const weekStart = new Date(weekStartDate)
-                                weekStart.setUTCHours(0, 0, 0, 0)
+                                weekStart.setHours(0, 0, 0, 0)
 
-                                const weekEnd = new Date(weekStartDate)
-                                weekEnd.setDate(weekEnd.getDate() + 6)
-                                weekEnd.setUTCHours(23, 59, 59, 999)
+                                const weekEndLocal = new Date(weekStartDate)
+                                weekEndLocal.setDate(weekEndLocal.getDate() + 6)
+                                weekEndLocal.setHours(23, 59, 59, 999)
 
                                 const isDeleted = !!goal.deletedAt
                                 if (isDeleted) return false
 
                                 const activeFromDate = goal.activeFrom ? new Date(goal.activeFrom) : null
-                                const activeAfterWeek = activeFromDate && !isNaN(activeFromDate.getTime()) && activeFromDate > weekEnd
-                                if (activeAfterWeek) return false
+                                if (activeFromDate && !isNaN(activeFromDate.getTime()) && activeFromDate > weekEndLocal) return false
 
-                                const isArchivedThisWeek = goal.archivedFromWeek && new Date(goal.archivedFromWeek) <= weekStartDate
+                                const isArchivedThisWeek = goal.archivedFromWeek && new Date(goal.archivedFromWeek) <= weekStart
                                 if (isArchivedThisWeek) return false
 
                                 return true
