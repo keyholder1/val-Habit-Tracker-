@@ -30,7 +30,10 @@ export function useNotes() {
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(newNote),
             })
-            if (!res.ok) throw new Error('Failed to create note')
+            if (!res.ok) {
+                const errorData = await res.json().catch(() => ({}))
+                throw new Error(errorData.error || errorData.details || 'Failed to create note')
+            }
             return res.json()
         },
         onSuccess: () => {

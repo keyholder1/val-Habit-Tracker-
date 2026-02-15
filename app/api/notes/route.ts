@@ -13,6 +13,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
 
+        console.log('🔵 [API /api/notes GET] Session:', session?.user?.id, session?.user?.email)
         const notes = await prisma.notesEntry.findMany({
             where: {
                 userId: session.user.id,
@@ -21,9 +22,9 @@ export async function GET(req: NextRequest) {
         })
 
         return NextResponse.json(notes)
-    } catch (error) {
-        console.error('🔵 [API /api/notes GET] ERROR:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    } catch (error: any) {
+        console.error('🔵 [API /api/notes GET] ERROR:', error.message, error)
+        return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
 }
 
@@ -42,6 +43,9 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })
         }
 
+        console.log('🔵 [API /api/notes POST] Session:', session?.user?.id)
+        console.log('🔵 [API /api/notes POST] Body:', body)
+
         const note = await prisma.notesEntry.create({
             data: {
                 userId: session.user.id,
@@ -50,9 +54,10 @@ export async function POST(req: NextRequest) {
             },
         })
 
+        console.log('🔵 [API /api/notes POST] Created note:', note.id)
         return NextResponse.json(note)
-    } catch (error) {
-        console.error('🔵 [API /api/notes POST] ERROR:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    } catch (error: any) {
+        console.error('🔵 [API /api/notes POST] ERROR:', error.message, error)
+        return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
 }
