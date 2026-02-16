@@ -64,7 +64,7 @@ async function main() {
                 console.log(`   ✅ Created Goal: ${g.name}`)
             } else {
                 console.log(`   ℹ️ Goal exists: ${g.name}`)
-                // Optionally update activeFrom if it is too recent, so historical logs show up
+                // Optionally update startDate if it is too recent, so historical logs show up
                 // But we won't modify existing goals too aggressively
             }
             createdGoals.push(goal)
