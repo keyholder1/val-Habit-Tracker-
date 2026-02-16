@@ -28,11 +28,24 @@ export async function PATCH(
         const userId = user.id
 
         const body = await req.json()
-        const { symbol, name, weeklyTarget, isArchived, archivedFromWeek, deletedAt, expectedUpdatedAt } = body
+        const { symbol, name, weeklyTarget, isArchived, archivedFromWeek, deletedAt, startDate, expectedUpdatedAt } = body
 
         // Validation
         if (symbol && symbol.length > 8) {
             return NextResponse.json({ error: 'Symbol too long' }, { status: 400 })
+        }
+
+        if (startDate) {
+            const startDateDate = new Date(startDate)
+            const now = new Date()
+            now.setHours(23, 59, 59, 999)
+
+            if (isNaN(startDateDate.getTime())) {
+                return NextResponse.json({ error: 'Invalid startDate format' }, { status: 400 })
+            }
+            if (startDateDate > now) {
+                return NextResponse.json({ error: 'Start date cannot be in the future' }, { status: 400 })
+            }
         }
 
         // Verify ownership and fetch current state for concurrency check
@@ -57,6 +70,7 @@ export async function PATCH(
         if (isArchived !== undefined) dataToUpdate.isArchived = isArchived
         if (archivedFromWeek !== undefined) dataToUpdate.archivedFromWeek = new Date(archivedFromWeek)
         if (deletedAt !== undefined) dataToUpdate.deletedAt = new Date(deletedAt)
+        if (startDate !== undefined) dataToUpdate.startDate = new Date(startDate)
 
         // Update
         const updatedGoal = await prisma.$transaction(async (tx) => {
@@ -68,6 +82,7 @@ export async function PATCH(
             let eventType = null
             if (dataToUpdate.isArchived === true) eventType = EVENTS.GOAL_ARCHIVED
             if (dataToUpdate.deletedAt) eventType = EVENTS.GOAL_DELETED
+            if (dataToUpdate.startDate) eventType = 'GOAL_START_DATE_UPDATED'
 
             if (eventType) {
                 await logEvent(tx, {

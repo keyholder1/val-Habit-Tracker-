@@ -9,7 +9,7 @@ interface WeeklyLog {
         id: string
         name: string
         createdAt?: Date | string
-        activeFrom?: Date | string
+        startDate?: Date | string
     }
 }
 
@@ -32,10 +32,10 @@ export function normalizeDailyRecords(weeklyLogs: WeeklyLog[]): DailyRecord[] {
             : null
         if (goalCreatedAt) goalCreatedAt.setHours(0, 0, 0, 0)
 
-        const activeFrom = log.goal.activeFrom
-            ? new Date(log.goal.activeFrom)
+        const startDate = log.goal.startDate
+            ? new Date(log.goal.startDate)
             : null
-        if (activeFrom) activeFrom.setHours(0, 0, 0, 0)
+        if (startDate) startDate.setHours(0, 0, 0, 0)
 
         // Expand 7 checkbox states into 7 daily records
         for (let dayIndex = 0; dayIndex < 7; dayIndex++) {

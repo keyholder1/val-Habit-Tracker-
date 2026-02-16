@@ -10,7 +10,7 @@ interface Goal {
     name: string
     symbol?: string
     weeklyTarget: number
-    activeFrom: string
+    startDate: string
     archivedFromWeek?: string | null
     deletedAt?: string | null
     createdAt: string
@@ -148,8 +148,8 @@ function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect 
                                 const isDeleted = !!goal.deletedAt
                                 if (isDeleted) return false
 
-                                const activeFromDate = goal.activeFrom ? new Date(goal.activeFrom) : null
-                                if (activeFromDate && !isNaN(activeFromDate.getTime()) && activeFromDate > weekEndLocal) return false
+                                const startDateDate = goal.startDate ? new Date(goal.startDate) : null
+                                if (startDateDate && !isNaN(startDateDate.getTime()) && startDateDate > weekEndLocal) return false
 
                                 const isArchivedThisWeek = goal.archivedFromWeek && new Date(goal.archivedFromWeek) <= weekStart
                                 if (isArchivedThisWeek) return false
@@ -165,7 +165,7 @@ function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect 
                                     weekStartDate={weekStartIso}
                                     defaultTarget={goal.weeklyTarget}
                                     highlightIndex={highlightIndex}
-                                    goalActiveFrom={goal.activeFrom}
+                                    goalStartDate={goal.startDate}
                                 />
                             ))
                     )}

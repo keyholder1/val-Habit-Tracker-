@@ -6,7 +6,7 @@ export const goalSchema = z.object({
     name: z.string().min(1).max(100),
     weeklyTarget: z.number().int().min(1).max(7),
     symbol: z.string().max(10).optional().nullable(),
-    activeFrom: z.string().datetime().or(z.date()).optional(),
+    startDate: z.string().datetime().or(z.date()).optional(),
 })
 
 export const weeklyLogSchema = z.object({

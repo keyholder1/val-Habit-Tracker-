@@ -9,7 +9,7 @@ export type Goal = {
     isArchived: boolean
     archivedFromWeek: string | null
     deletedAt: string | null
-    activeFrom: string
+    startDate: string
     createdAt: string
 }
 
@@ -29,7 +29,7 @@ export function useGoals() {
     })
 
     const createGoal = useMutation({
-        mutationFn: async (newGoal: { name: string; symbol?: string; weeklyTarget: number; activeFrom?: string }) => {
+        mutationFn: async (newGoal: { name: string; symbol?: string; weeklyTarget: number; startDate?: string }) => {
             const res = await fetch('/api/goals', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },

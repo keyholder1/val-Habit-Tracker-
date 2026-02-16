@@ -74,10 +74,17 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'Invalid input', details: result.error.format() }, { status: 400 })
             }
 
-            const { name, weeklyTarget, symbol, activeFrom } = result.data
+            const { name, weeklyTarget, symbol, startDate } = result.data
 
-            // Validation for activeFrom
-            const activeFromDate = activeFrom ? new Date(activeFrom) : new Date()
+            // Validation for startDate
+            const startDateDate = startDate ? new Date(startDate) : new Date()
+
+            // Cannot be future beyond today
+            const today = new Date()
+            today.setHours(23, 59, 59, 999)
+            if (startDateDate > today) {
+                return NextResponse.json({ error: 'Start date cannot be in the future' }, { status: 400 })
+            }
 
             const goal = await prisma.$transaction(async (tx) => {
                 const newGoal = await tx.goal.create({
@@ -86,7 +93,7 @@ export async function POST(req: NextRequest) {
                         name,
                         symbol: symbol || "",
                         weeklyTarget,
-                        activeFrom: activeFromDate,
+                        startDate: startDateDate,
                     },
                 })
 
@@ -99,7 +106,7 @@ export async function POST(req: NextRequest) {
                         name,
                         weeklyTarget,
                         symbol,
-                        activeFrom: activeFromDate.toISOString(),
+                        startDate: startDateDate.toISOString(),
                     },
                 })
 

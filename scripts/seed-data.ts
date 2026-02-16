@@ -58,7 +58,7 @@ async function main() {
                         name: g.name,
                         symbol: g.symbol,
                         weeklyTarget: g.target,
-                        activeFrom: subWeeks(new Date(), WEEKS_TO_SEED + 1) // Ensure activeFrom covers history
+                        startDate: subWeeks(new Date(), WEEKS_TO_SEED + 1) // Ensure startDate covers history
                     }
                 })
                 console.log(`   ✅ Created Goal: ${g.name}`)

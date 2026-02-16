@@ -61,13 +61,13 @@ async function main() {
 
     for (const goal of allGoals) {
         console.log(`\nGoal Analysis: ${goal.name}`)
-        console.log(`  activeFrom: ${goal.activeFrom}`)
+        console.log(`  startDate: ${goal.startDate}`)
         console.log(`  archivedFromWeek: ${goal.archivedFromWeek}`)
 
-        if (goal.activeFrom) {
+        if (goal.startDate) {
             // MATCH THE SERVER LOGIC EXACTLY (Standard Date, not UTC Date yet in route.ts, but let's test safely)
             // Actually, let's try the FIX directly: Use UTC methods for Active/Archived too
-            const activeDate = new Date(goal.activeFrom)
+            const activeDate = new Date(goal.startDate)
             activeDate.setUTCHours(0, 0, 0, 0)
             const active = activeDate.getTime()
 

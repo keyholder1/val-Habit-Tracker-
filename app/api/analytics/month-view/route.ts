@@ -54,7 +54,7 @@ export async function GET(req: NextRequest) {
                 },
                 include: {
                     goal: {
-                        select: { id: true, name: true, symbol: true, isArchived: true, archivedFromWeek: true, deletedAt: true, createdAt: true, weeklyTarget: true, activeFrom: true }
+                        select: { id: true, name: true, symbol: true, isArchived: true, archivedFromWeek: true, deletedAt: true, createdAt: true, weeklyTarget: true, startDate: true }
                     }
                 }
             }),
@@ -63,7 +63,7 @@ export async function GET(req: NextRequest) {
                     userId: session.user.id,
                     deletedAt: null
                 },
-                select: { id: true, createdAt: true, archivedFromWeek: true, weeklyTarget: true, activeFrom: true }
+                select: { id: true, createdAt: true, archivedFromWeek: true, weeklyTarget: true, startDate: true }
             })
         ]) as [any[], any[]]
 
@@ -97,8 +97,8 @@ export async function GET(req: NextRequest) {
                 const dayTime = current.getTime()
 
                 // Goal must be active on this day
-                if (goal.activeFrom) {
-                    const activeDate = new Date(goal.activeFrom)
+                if (goal.startDate) {
+                    const activeDate = new Date(goal.startDate)
                     activeDate.setUTCHours(0, 0, 0, 0)
                     const active = activeDate.getTime()
                     if (dayTime < active) continue
@@ -147,8 +147,8 @@ export async function GET(req: NextRequest) {
                         // Check if archived starting this week
                         let isActive = true
 
-                        if (log.goal.activeFrom) {
-                            const active = new Date(log.goal.activeFrom).setHours(0, 0, 0, 0)
+                        if (log.goal.startDate) {
+                            const active = new Date(log.goal.startDate).setHours(0, 0, 0, 0)
                             if (logDay.getTime() < active) isActive = false
                         }
 

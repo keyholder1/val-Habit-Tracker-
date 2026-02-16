@@ -16,7 +16,7 @@ interface GoalRowProps {
     defaultTarget: number
     highlightIndex?: number
     onRefreshNeeded?: () => void
-    goalActiveFrom?: string
+    goalStartDate?: string
 }
 
 interface WeeklyLog {
@@ -30,7 +30,7 @@ const DAY_LABELS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
 function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarget,
     highlightIndex,
     onRefreshNeeded,
-    goalActiveFrom
+    goalStartDate
 }: GoalRowProps) {
     const [isArchiveModalOpen, setIsArchiveModalOpen] = useState(false)
     const [isArchiving, setIsArchiving] = useState(false)
@@ -112,9 +112,9 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
         const dayDate = new Date(weekStartDate)
         dayDate.setDate(dayDate.getDate() + index)
         dayDate.setHours(0, 0, 0, 0)
-        const activeDate = goalActiveFrom ? new Date(goalActiveFrom) : null
-        if (activeDate) activeDate.setHours(0, 0, 0, 0)
-        const isDisabled = activeDate ? dayDate < activeDate : false
+        const startDateDate = goalStartDate ? new Date(goalStartDate) : null
+        if (startDateDate) startDateDate.setHours(0, 0, 0, 0)
+        const isDisabled = startDateDate ? dayDate < startDateDate : false
         return { checked, isDisabled, index }
     })
 

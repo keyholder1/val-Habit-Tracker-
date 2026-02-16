@@ -30,15 +30,22 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
     const [newGoalSymbol, setNewGoalSymbol] = useState('')
     const [newGoalTarget, setNewGoalTarget] = useState(7)
 
-    // Default activeFrom to the start of the week for selectedDate
-    const [newGoalActiveFrom, setNewGoalActiveFrom] = useState(
+    // Default startDate to the start of the week for selectedDate
+    const [newGoalStartDate, setNewGoalStartDate] = useState(
         getWeekStart(selectedDate).toISOString().split('T')[0]
     )
 
     // Synchronize if selectedDate changes
     useEffect(() => {
-        setNewGoalActiveFrom(getWeekStart(selectedDate).toISOString().split('T')[0])
+        setNewGoalStartDate(getWeekStart(selectedDate).toISOString().split('T')[0])
     }, [selectedDate])
+
+    // Edit Start Date State (Dedicated Section)
+    const [editGoalId, setEditGoalId] = useState<string>('')
+    const [editGoalStartDate, setEditGoalStartDate] = useState<string>(
+        new Date().toISOString().split('T')[0]
+    )
+    const [isEditCollapsibleOpen, setIsEditCollapsibleOpen] = useState(false)
 
     // Edit Mode State
     const [editingId, setEditingId] = useState<string | null>(null)
@@ -70,6 +77,23 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
         }
     }
 
+    const handleEditStartDate = async (e: React.FormEvent) => {
+        e.preventDefault()
+        if (!editGoalId) return
+        try {
+            await updateGoal.mutateAsync({
+                id: editGoalId,
+                data: {
+                    startDate: new Date(editGoalStartDate).toISOString()
+                }
+            })
+            // Feedback is immediate via Query invalidation in useGoals
+            setEditGoalId('')
+        } catch (error) {
+            console.error('Failed to update goal start date:', error)
+        }
+    }
+
     const cancelEdit = () => {
         setEditingId(null)
     }
@@ -83,7 +107,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                 name: newGoalName,
                 symbol: newGoalSymbol,
                 weeklyTarget: newGoalTarget,
-                activeFrom: new Date(newGoalActiveFrom).toISOString(),
+                startDate: new Date(newGoalStartDate).toISOString(),
             })
 
             setNewGoalName('')
@@ -204,8 +228,8 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                     <label className="text-xs text-neutral-600 w-12 text-right">Start:</label>
                                     <input
                                         type="date"
-                                        value={newGoalActiveFrom}
-                                        onChange={(e) => setNewGoalActiveFrom(e.target.value)}
+                                        value={newGoalStartDate}
+                                        onChange={(e) => setNewGoalStartDate(e.target.value)}
                                         className="flex-1 p-2 sm:p-1 border rounded text-sm focus:ring-1 focus:ring-primary-400 outline-none"
                                     />
                                 </div>
@@ -226,6 +250,61 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                     {createGoal.isPending ? 'Adding...' : 'Add Goal'}
                                 </button>
                             </div>
+                        </form>
+                    )}
+                </div>
+
+                {/* Edit Existing Goal Section (Desktop) / Collapsible (Mobile) */}
+                <div className="bg-white/40 rounded-xl p-3 border border-neutral-200">
+                    <button
+                        onClick={() => setIsEditCollapsibleOpen(!isEditCollapsibleOpen)}
+                        className="w-full py-2 flex items-center justify-between gap-2 text-sm font-bold text-neutral-700 hover:text-primary-600 transition-colors"
+                    >
+                        <span className="flex items-center gap-2 text-left">
+                            {isMobile ? (isEditCollapsibleOpen ? '▼' : '▶') : ''} Edit Existing Goal
+                        </span>
+                    </button>
+
+                    {(isEditCollapsibleOpen || !isMobile) && (
+                        <form onSubmit={handleEditStartDate} className="mt-3 space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
+                            <div className="space-y-2">
+                                <select
+                                    value={editGoalId}
+                                    onChange={(e) => {
+                                        const id = e.target.value
+                                        setEditGoalId(id)
+                                        const goal = goals?.find(g => g.id === id)
+                                        if (goal?.startDate) {
+                                            setEditGoalStartDate(new Date(goal.startDate).toISOString().split('T')[0])
+                                        }
+                                    }}
+                                    className="w-full p-3 sm:p-2 border rounded-lg text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
+                                >
+                                    <option value="">Select a goal...</option>
+                                    {goals?.filter(g => !g.deletedAt).map(g => (
+                                        <option key={g.id} value={g.id}>{g.symbol} {g.name}</option>
+                                    ))}
+                                </select>
+
+                                <div className="flex items-center gap-2">
+                                    <label className="text-xs text-neutral-600 w-12 text-right">Start:</label>
+                                    <input
+                                        type="date"
+                                        value={editGoalStartDate}
+                                        max={new Date().toISOString().split('T')[0]}
+                                        onChange={(e) => setEditGoalStartDate(e.target.value)}
+                                        className="flex-1 p-3 sm:p-2 border rounded-lg text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
+                                    />
+                                </div>
+                            </div>
+
+                            <button
+                                type="submit"
+                                disabled={!editGoalId || updateGoal.isPending}
+                                className="w-full py-3 sm:py-2 bg-primary-500 text-white rounded-lg text-sm font-medium hover:bg-primary-600 shadow-sm disabled:opacity-50 transition-all flex items-center justify-center min-h-[44px]"
+                            >
+                                {updateGoal.isPending ? 'Saving...' : 'Save Changes'}
+                            </button>
                         </form>
                     )}
                 </div>
