@@ -19,6 +19,7 @@ import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 import BottomNav from './navigation/BottomNav'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppBuildInfo from './system/AppBuildInfo'
+import ApiPingDot from './dev/ApiPingDot'
 
 
 type ViewMode = 'month' | 'week'
@@ -363,6 +364,7 @@ export default function DashboardLayout() {
             )}
 
             <AppBuildInfo />
+            <ApiPingDot />
         </div>
     )
 }
