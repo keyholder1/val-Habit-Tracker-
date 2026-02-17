@@ -20,6 +20,7 @@ import BottomNav from './navigation/BottomNav'
 import { motion, AnimatePresence } from 'framer-motion'
 import AppBuildInfo from './system/AppBuildInfo'
 import ApiPingDot from './dev/ApiPingDot'
+import ApiLatencyBadge from './dev/ApiLatencyBadge'
 
 
 type ViewMode = 'month' | 'week'
@@ -365,6 +366,7 @@ export default function DashboardLayout() {
 
             <AppBuildInfo />
             <ApiPingDot />
+            <ApiLatencyBadge />
         </div>
     )
 }
