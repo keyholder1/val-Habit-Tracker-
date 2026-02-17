@@ -70,7 +70,7 @@ Authentication
 4. View analytics dashboard for insights
 5. Take notes with floating notes feature
 
-## 🗄 Database Schema
+ Database Schema
 
 - **Users**: Email, authentication data
 - **Goals**: User-defined goals with default targets
