@@ -18,6 +18,7 @@ import { useDevice } from '@/components/providers/DeviceProvider'
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 import BottomNav from './navigation/BottomNav'
 import { motion, AnimatePresence } from 'framer-motion'
+import AppBuildInfo from './system/AppBuildInfo'
 
 
 type ViewMode = 'month' | 'week'
@@ -360,6 +361,8 @@ export default function DashboardLayout() {
                     onClose={() => setIsProjectPanelOpen(false)}
                 />
             )}
+
+            <AppBuildInfo />
         </div>
     )
 }

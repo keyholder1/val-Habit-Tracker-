@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
+import AppBuildInfo from './system/AppBuildInfo'
 
 export default function LoginContent() {
     const searchParams = useSearchParams()
@@ -62,6 +63,7 @@ export default function LoginContent() {
                     Access restricted to authorized users only
                 </p>
             </motion.div>
+            <AppBuildInfo />
         </div>
     )
 }
