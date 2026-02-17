@@ -2,7 +2,7 @@
 
 A premium, whitelist-only habit tracking web application with interactive analytics and continuous timeline tracking.
 
-## 🌟 Features
+ Features
 
 - **Premium UI/UX**: Glass morphism design, smooth animations, and vibrant color palette
 - **Interactive Landing Page**: WebGL particle system for special user (Nandini)
@@ -18,14 +18,14 @@ A premium, whitelist-only habit tracking web application with interactive analyt
   - Heatmaps (Calendar, Weekly Density, Time-of-Week)
   - Premium Insights (Momentum, Stability, Lifetime Cumulative)
 
-## 🔐 Authentication
+Authentication
 
 - **Google OAuth** only
 - **Whitelist restricted** to:
   - nandini.zunder@gmail.com
   - arnav.nishant.deshpande@gmail.com
 
-## 🛠 Tech Stack
+ Tech Stack
 
 - **Frontend**: Next.js 14, React, TypeScript, Tailwind CSS, Framer Motion
 - **Graphics**: Three.js, Recharts
@@ -33,7 +33,7 @@ A premium, whitelist-only habit tracking web application with interactive analyt
 - **Database**: PostgreSQL with Prisma ORM
 - **Auth**: NextAuth.js
 
-## 🚀 Setup
+ Setup
 
 1. **Clone and install**:
    ```bash
@@ -62,7 +62,7 @@ A premium, whitelist-only habit tracking web application with interactive analyt
 
 5. **Open**: [http://localhost:3000](http://localhost:3000)
 
-## 📊 Usage
+ Usage
 
 1. Sign in with whitelisted Google account
 2. Add goals from the sidebar (goal name + weekly target)
@@ -77,14 +77,14 @@ A premium, whitelist-only habit tracking web application with interactive analyt
 - **WeeklyLogs**: Checkbox states (7 days) per goal per week
 - **Notes**: User notes with optional linking
 
-## 📝 Development Notes
+ Development Notes
 
 - Continuous timeline (no weekly resets)
 - All graphs use mock data - implement real aggregation in `lib/analytics.ts`
 - Interactive background optimized for 60fps
 - Prisma migrations in `prisma/` directory
 
-## 🎨 Design Philosophy
+ Design Philosophy
 
 - Soft, calm color palette
 - Premium glass morphism effects
@@ -92,10 +92,7 @@ A premium, whitelist-only habit tracking web application with interactive analyt
 - Data-rich, analytics-heavy interface
 - Mobile responsive
 
-## 📜 License
+ License
 
 Private project - not for public use
 
----
-
-Built with ❤️ for personal habit tracking
