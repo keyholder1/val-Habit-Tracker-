@@ -4,6 +4,9 @@ const nextConfig = {
     experimental: {
         optimizePackageImports: ['recharts', 'framer-motion'],
     },
+    env: {
+        NEXT_PUBLIC_BUILD_TIME: new Date().toISOString(),
+    },
     headers: async () => [
         {
             source: '/(.*)',

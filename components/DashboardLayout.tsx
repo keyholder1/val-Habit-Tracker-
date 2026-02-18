@@ -21,6 +21,7 @@ import { motion, AnimatePresence } from 'framer-motion'
 import AppBuildInfo from './system/AppBuildInfo'
 import ApiPingDot from './dev/ApiPingDot'
 import ApiLatencyBadge from './dev/ApiLatencyBadge'
+import BuildTimestampTooltip from './dev/BuildTimestampTooltip'
 
 
 type ViewMode = 'month' | 'week'
@@ -367,6 +368,7 @@ export default function DashboardLayout() {
             <AppBuildInfo />
             <ApiPingDot />
             <ApiLatencyBadge />
+            <BuildTimestampTooltip />
         </div>
     )
 }

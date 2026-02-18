@@ -4,6 +4,7 @@ import { signIn } from 'next-auth/react'
 import { motion } from 'framer-motion'
 import { useSearchParams } from 'next/navigation'
 import AppBuildInfo from './system/AppBuildInfo'
+import BuildTimestampTooltip from './dev/BuildTimestampTooltip'
 
 export default function LoginContent() {
     const searchParams = useSearchParams()
@@ -64,6 +65,7 @@ export default function LoginContent() {
                 </p>
             </motion.div>
             <AppBuildInfo />
+            <BuildTimestampTooltip />
         </div>
     )
 }
