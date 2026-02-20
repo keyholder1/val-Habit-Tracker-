@@ -1,26 +1,32 @@
 import { NextResponse } from 'next/server'
+import { getServerSession } from 'next-auth'
+import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
-import { logger } from '@/lib/logger'
+
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
+    // Require authenticated session — no session, no health data
+    const session = await getServerSession(authOptions)
+    if (!session?.user?.email) {
+        return NextResponse.json({ connected: false }, { status: 401 })
+    }
+
     try {
-        // Simple raw query to check DB connectivity
-        await prisma.$queryRaw`SELECT 1`
+        // Timeout-protected DB ping
+        await Promise.race([
+            prisma.$queryRaw`SELECT 1`,
+            new Promise((_, reject) =>
+                setTimeout(() => reject(new Error('DB timeout')), 4000)
+            ),
+        ])
 
         return NextResponse.json({
-            status: "ok",
-            database: "connected",
+            connected: true,
+            db: true,
             timestamp: Date.now(),
-            uptime: process.uptime()
-        }, { status: 200 })
-    } catch (error) {
-        logger.logError('Health Check Failed', error)
-        return NextResponse.json({
-            status: "degraded",
-            database: "disconnected",
-            error: error instanceof Error ? error.message : 'Unknown error',
-            timestamp: Date.now(),
-            uptime: process.uptime()
-        }, { status: 503 })
+        })
+    } catch {
+        return NextResponse.json({ connected: false }, { status: 503 })
     }
 }

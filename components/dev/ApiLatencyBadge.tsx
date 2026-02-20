@@ -1,73 +1,132 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { useDevice } from '@/components/providers/DeviceProvider'
+import { useState, useEffect, useRef, useCallback } from 'react'
+
+const POLL_INTERVAL = 20_000   // 20s
+const FETCH_TIMEOUT = 5_000    // 5s abort
+const ROLLING_WINDOW = 5       // last N samples
+
+type Status = 'checking' | 'ok' | 'slow' | 'critical' | 'offline'
+
+function getAvg(samples: number[]): number {
+    if (!samples.length) return 0
+    return Math.round(samples.reduce((a, b) => a + b, 0) / samples.length)
+}
+
+function getStatus(avg: number, offline: boolean): Status {
+    if (offline) return 'offline'
+    if (avg < 150) return 'ok'
+    if (avg < 500) return 'slow'
+    return 'critical'
+}
+
+function isDesktopMouse(): boolean {
+    if (typeof window === 'undefined') return false
+    if (window.innerWidth < 1024) return false
+    if (navigator.maxTouchPoints > 0) return false
+    if (window.matchMedia('(pointer: coarse)').matches) return false
+    return true
+}
+
+function showBadge(): boolean {
+    const forceShow = process.env.NEXT_PUBLIC_SHOW_DEV_BADGE === 'true'
+    const isDev = process.env.NODE_ENV !== 'production'
+    return (isDev || forceShow) && isDesktopMouse()
+}
 
 export default function ApiLatencyBadge() {
-    const { isHydrated } = useDevice()
-    const [latency, setLatency] = useState<number | null>(null)
-    const [error, setError] = useState(false)
+    const [visible, setVisible] = useState(false)
+    const [avgLatency, setAvgLatency] = useState<number | null>(null)
+    const [status, setStatus] = useState<Status>('checking')
+
+    const samplesRef = useRef<number[]>([])
+    const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+    const check = useCallback(async () => {
+        if (document.hidden) return  // pause when tab hidden
+
+        const controller = new AbortController()
+        const timeoutId = setTimeout(() => controller.abort(), FETCH_TIMEOUT)
+        const start = performance.now()
+
+        try {
+            const res = await fetch('/api/health', {
+                signal: controller.signal,
+                cache: 'no-store',
+            })
+            clearTimeout(timeoutId)
+
+            if (res.ok) {
+                const elapsed = Math.round(performance.now() - start)
+                // Rolling window: keep last N samples
+                samplesRef.current = [...samplesRef.current.slice(-(ROLLING_WINDOW - 1)), elapsed]
+                const avg = getAvg(samplesRef.current)
+                setAvgLatency(avg)
+                setStatus(getStatus(avg, false))
+            } else {
+                setStatus('offline')
+            }
+        } catch {
+            clearTimeout(timeoutId)
+            setStatus('offline')
+        }
+    }, [])
 
     useEffect(() => {
-        if (process.env.NODE_ENV !== 'development') return
+        // Evaluate after hydration (client-only)
+        if (!showBadge()) return
 
-        const checkLatency = async () => {
-            const start = performance.now()
-            try {
-                // Use a short timeout
-                const controller = new AbortController()
-                const timeoutId = setTimeout(() => controller.abort(), 5000)
+        setVisible(true)
+        check()
 
-                const res = await fetch('/api/health', {
-                    signal: controller.signal,
-                    cache: 'no-store'
-                })
+        intervalRef.current = setInterval(check, POLL_INTERVAL)
 
-                clearTimeout(timeoutId)
-
-                const end = performance.now()
-
-                if (res.ok) {
-                    setLatency(Math.round(end - start))
-                    setError(false)
-                } else {
-                    setError(true)
-                }
-            } catch {
-                setError(true)
+        // Pause/resume on tab visibility
+        const onVisibility = () => {
+            if (!document.hidden && intervalRef.current === null) {
+                check()
+                intervalRef.current = setInterval(check, POLL_INTERVAL)
+            } else if (document.hidden && intervalRef.current !== null) {
+                clearInterval(intervalRef.current)
+                intervalRef.current = null
             }
         }
 
-        checkLatency()
-        const interval = setInterval(checkLatency, 20000)
+        document.addEventListener('visibilitychange', onVisibility)
 
-        return () => clearInterval(interval)
-    }, [])
+        return () => {
+            if (intervalRef.current) clearInterval(intervalRef.current)
+            document.removeEventListener('visibilitychange', onVisibility)
+        }
+    }, [check])
 
-    if (process.env.NODE_ENV !== 'development') return null
-    if (!isHydrated) return null
+    if (!visible) return null
 
-    let colorClass = 'text-green-400'
-    let text = `API ${latency}ms`
+    const dotColor =
+        status === 'ok' ? 'bg-green-500' :
+            status === 'slow' ? 'bg-yellow-500' :
+                status === 'critical' ? 'bg-red-500' :
+                    status === 'offline' ? 'bg-neutral-600' :
+                        'bg-yellow-500' // checking
 
-    if (error) {
-        colorClass = 'text-red-400'
-        text = 'API ?'
-    } else if (latency !== null) {
-        if (latency < 80) colorClass = 'text-green-400'
-        else if (latency < 200) colorClass = 'text-yellow-400'
-        else colorClass = 'text-red-400'
-    } else {
-        text = 'API ...'
-        colorClass = 'text-neutral-400'
-    }
+    const textColor =
+        status === 'ok' ? 'text-green-400' :
+            status === 'slow' ? 'text-yellow-400' :
+                status === 'critical' ? 'text-red-400' :
+                    status === 'offline' ? 'text-neutral-500' :
+                        'text-neutral-400'
+
+    const label =
+        status === 'offline' ? 'API ⚫' :
+            status === 'checking' ? 'API …' :
+                `API ${avgLatency}ms`
 
     return (
-        <div
-            className="fixed top-4 left-4 z-50 px-2 py-1 bg-black/60 backdrop-blur-sm rounded-full pointer-events-none select-none transition-colors duration-300"
-        >
-            <span className={`text-[10px] font-mono font-medium ${colorClass}`}>
-                {text}
+        // CSS breakpoint guard (belt-and-suspenders with JS guard above)
+        <div className="hidden lg:flex fixed bottom-8 left-8 z-30 items-center gap-1.5 px-2.5 py-1 bg-neutral-900/70 backdrop-blur-sm rounded-full pointer-events-none select-none transition-opacity duration-300">
+            <div className={`w-1.5 h-1.5 rounded-full shrink-0 ${dotColor}`} />
+            <span className={`text-[10px] font-mono font-medium ${textColor}`}>
+                {label}
             </span>
         </div>
     )
