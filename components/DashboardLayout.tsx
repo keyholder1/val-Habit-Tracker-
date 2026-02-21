@@ -22,6 +22,7 @@ import AppBuildInfo from './system/AppBuildInfo'
 import ApiPingDot from './dev/ApiPingDot'
 import ApiLatencyBadge from './dev/ApiLatencyBadge'
 import BuildTimestampTooltip from './dev/BuildTimestampTooltip'
+import KeyboardShortcutsOverlay from './dev/KeyboardShortcutsOverlay'
 
 
 type ViewMode = 'month' | 'week'
@@ -369,6 +370,9 @@ export default function DashboardLayout() {
             <ApiPingDot />
             <ApiLatencyBadge />
             <BuildTimestampTooltip />
+            <div className="hidden lg:block">
+                <KeyboardShortcutsOverlay />
+            </div>
         </div>
     )
 }
