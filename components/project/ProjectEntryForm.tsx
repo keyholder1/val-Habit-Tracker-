@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 import CodeVault from './CodeVault'
+import AutoSaveIndicator from '@/components/ui/AutoSaveIndicator'
 
 interface ProjectEntryFormProps {
     initialData?: any
@@ -42,7 +43,12 @@ export default function ProjectEntryForm({ initialData, onSuccess, onCancel, rea
 
     return (
         <div className="space-y-6">
-            <form onSubmit={handleSubmit} className="space-y-4">
+            <form onSubmit={handleSubmit} className="space-y-4 relative">
+                {!readOnly && (
+                    <AutoSaveIndicator
+                        content={`${formData.projectDescription}${formData.featuresImplemented}${formData.futureIdeas}`}
+                    />
+                )}
                 {/* Project Name */}
                 <div>
                     <label className="block text-sm font-medium text-neutral-700 mb-1">Project Name</label>

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useCallback, useRef } from 'react'
+import AutoSaveIndicator from '@/components/ui/AutoSaveIndicator'
 
 interface MigraineEntry {
     id: string
@@ -107,7 +108,8 @@ export default function MigraineDiaryPanel({ date, onSave }: MigraineDiaryPanelP
     }
 
     return (
-        <div className="glass rounded-2xl shadow-soft p-6 h-full flex flex-col overflow-y-auto">
+        <div className="glass rounded-2xl shadow-soft p-6 h-full flex flex-col overflow-y-auto relative">
+            <AutoSaveIndicator content={entry.foodBefore || ''} />
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold text-neutral-800 flex items-center gap-2">
                     🧠 Migraine Diary

@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Note } from '@/hooks/useNotes'
+import AutoSaveIndicator from '@/components/ui/AutoSaveIndicator'
 
 interface NoteEditorProps {
     note: Note | null // null for new note
@@ -73,7 +74,8 @@ export default function NoteEditor({ note, onSave, onCancel, onDelete, isSaving 
                 </header>
 
                 {/* Editor Surface */}
-                <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-24">
+                <div className="flex-1 overflow-y-auto p-6 space-y-4 pb-24 relative">
+                    <AutoSaveIndicator content={content} />
                     <input
                         type="text"
                         placeholder="Untitled Note"
