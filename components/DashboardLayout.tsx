@@ -23,6 +23,7 @@ import ApiPingDot from './dev/ApiPingDot'
 import ApiLatencyBadge from './dev/ApiLatencyBadge'
 import BuildTimestampTooltip from './dev/BuildTimestampTooltip'
 import KeyboardShortcutsOverlay from './dev/KeyboardShortcutsOverlay'
+import QuickCommandPalette from './ui/QuickCommandPalette'
 
 
 type ViewMode = 'month' | 'week'
@@ -373,6 +374,13 @@ export default function DashboardLayout() {
             <div className="hidden lg:block">
                 <KeyboardShortcutsOverlay />
             </div>
+            <QuickCommandPalette
+                showMigraineFeatures={showMigraineFeatures}
+                showProjectFeatures={showProjectFeatures}
+                onToggleViewMode={setViewMode}
+                onOpenMigraineDiary={() => setIsDiaryOpen(true)}
+                onOpenProjectDiary={() => setIsProjectPanelOpen(true)}
+            />
         </div>
     )
 }
