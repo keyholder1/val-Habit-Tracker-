@@ -40,7 +40,9 @@ export function useGoals() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey })
+            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
             queryClient.invalidateQueries({ queryKey: ['analytics'] })
+            queryClient.invalidateQueries({ queryKey: ['monthView'] })
         },
     })
 

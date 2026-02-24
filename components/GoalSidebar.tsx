@@ -6,19 +6,13 @@ import { useBreakpoint } from '@/hooks/useBreakpoint'
 import { useIsTouchDevice } from '@/hooks/useIsTouchDevice'
 import GoalArchiveModal from './GoalArchiveModal'
 import ManageGoalsModal from './ManageGoalsModal'
+import { getWeekStart } from '@/lib/dateUtils'
 
 export interface GoalSidebarProps {
     selectedDate: Date
 }
 
-const getWeekStart = (date: Date): Date => {
-    const d = new Date(date)
-    const day = d.getDay()
-    const diff = day === 0 ? 6 : day - 1
-    d.setDate(d.getDate() - diff)
-    d.setHours(0, 0, 0, 0)
-    return d
-}
+// getWeekStart is now imported from @/lib/dateUtils
 
 export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
     const { goals, createGoal, updateGoal, archiveGoal, deleteGoal } = useGoals()
@@ -133,11 +127,14 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
         setIsArchiving(true)
         try {
             if (mode === 'next-week') {
-                const nextWeek = new Date()
-                nextWeek.setDate(nextWeek.getDate() + 7)
-                await archiveGoal.mutateAsync({ id: selectedGoal.id, isArchived: true, archivedFromWeek: nextWeek.toISOString() })
+                const thisMonday = getWeekStart(new Date())
+                const nextMonday = new Date(thisMonday)
+                nextMonday.setDate(nextMonday.getDate() + 7)
+                nextMonday.setHours(0, 0, 0, 0)
+                await archiveGoal.mutateAsync({ id: selectedGoal.id, isArchived: true, archivedFromWeek: nextMonday.toISOString() })
             } else if (mode === 'this-week') {
-                await archiveGoal.mutateAsync({ id: selectedGoal.id, isArchived: true, archivedFromWeek: new Date().toISOString() })
+                const thisMonday = getWeekStart(new Date())
+                await archiveGoal.mutateAsync({ id: selectedGoal.id, isArchived: true, archivedFromWeek: thisMonday.toISOString() })
             } else if (mode === 'delete') {
                 await deleteGoal.mutateAsync(selectedGoal.id)
             }

@@ -80,7 +80,15 @@ export async function PATCH(
             })
 
             let eventType = null
-            if (dataToUpdate.isArchived === true) eventType = EVENTS.GOAL_ARCHIVED
+            let eventPayload: any = dataToUpdate
+            if (dataToUpdate.isArchived === true || dataToUpdate.archivedFromWeek) {
+                eventType = EVENTS.GOAL_ARCHIVED
+                eventPayload = {
+                    mode: dataToUpdate.archivedFromWeek ? 'archive' : 'flag',
+                    archiveDate: dataToUpdate.archivedFromWeek || null,
+                    ...dataToUpdate,
+                }
+            }
             if (dataToUpdate.deletedAt) eventType = EVENTS.GOAL_DELETED
             if (dataToUpdate.startDate) eventType = 'GOAL_START_DATE_UPDATED'
 
@@ -90,7 +98,7 @@ export async function PATCH(
                     eventType,
                     entityType: 'Goal',
                     entityId: updated.id,
-                    payload: dataToUpdate,
+                    payload: eventPayload,
                 })
             }
 

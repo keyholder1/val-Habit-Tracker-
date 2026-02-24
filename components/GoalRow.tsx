@@ -7,6 +7,7 @@ import GoalArchiveModal from './GoalArchiveModal'
 import { useRouter } from 'next/navigation'
 import { useWeeklyLog } from '@/hooks/useWeeklyLogs'
 import { useGoals } from '@/hooks/useGoals'
+import { getWeekStart } from '@/lib/dateUtils'
 
 interface GoalRowProps {
     goalId: string
@@ -71,20 +72,21 @@ function GoalRowInner({ goalId, goalName, goalSymbol, weekStartDate, defaultTarg
         setIsArchiving(true)
         try {
             if (mode === 'next-week') {
-                const currentWeekStart = new Date(weekStartDate)
-                const nextWeek = new Date(currentWeekStart)
-                nextWeek.setDate(nextWeek.getDate() + 7)
+                const monday = getWeekStart(new Date(weekStartDate))
+                const nextMonday = new Date(monday)
+                nextMonday.setDate(nextMonday.getDate() + 7)
+                nextMonday.setHours(0, 0, 0, 0)
                 await archiveGoal.mutateAsync({
                     id: goalId,
                     isArchived: true,
-                    archivedFromWeek: nextWeek.toISOString()
+                    archivedFromWeek: nextMonday.toISOString()
                 })
             } else if (mode === 'this-week') {
-                const currentWeekStart = new Date(weekStartDate)
+                const monday = getWeekStart(new Date(weekStartDate))
                 await archiveGoal.mutateAsync({
                     id: goalId,
                     isArchived: true,
-                    archivedFromWeek: currentWeekStart.toISOString()
+                    archivedFromWeek: monday.toISOString()
                 })
             } else if (mode === 'delete') {
                 // useGoals deleteGoal now handles soft delete via PATCH
