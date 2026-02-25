@@ -6,12 +6,13 @@ import { assertProjectAccess } from '@/lib/whitelist'
 import { EVENTS, logEventSafe } from '@/lib/events'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 // 1MB limit in bytes
 const MAX_CODE_SIZE = 1024 * 1024
 
 // PATCH
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
     return withTiming('code-blocks PATCH', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -88,10 +89,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             return new NextResponse('Internal Error', { status: 500 })
         }
     })
-}
+})
 
 // DELETE
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     return withTiming('code-blocks DELETE', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -138,4 +139,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             return new NextResponse('Internal Error', { status: 500 })
         }
     })
-}
+})

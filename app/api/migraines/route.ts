@@ -8,6 +8,7 @@ import { withTiming } from '@/lib/timing'
 import { migraineEntrySchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
 import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,7 +65,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST - Create or update migraine entry
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     return withTiming('migraines POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -138,4 +139,4 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-}
+})

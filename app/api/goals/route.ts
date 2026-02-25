@@ -7,6 +7,7 @@ import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { withTiming } from '@/lib/timing'
 import { goalSchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,7 +60,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST - Create a new goal
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     return withTiming('goals POST', async () => {
         try {
             console.log('🟢 [API /api/goals POST] Handler called')
@@ -144,4 +145,4 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-}
+})

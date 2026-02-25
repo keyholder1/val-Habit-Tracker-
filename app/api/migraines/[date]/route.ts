@@ -3,6 +3,7 @@ import { prisma } from '@/lib/db'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { assertMigraineAccess } from '@/lib/whitelist'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 // ...
 
@@ -51,7 +52,7 @@ export async function GET(
         return new NextResponse('Internal Server Error', { status: 500 })
     }
 }
-export async function DELETE(
+export const DELETE = withRateLimit(async function DELETE(
     req: NextRequest,
     { params }: { params: { date: string } }
 ) {
@@ -92,4 +93,4 @@ export async function DELETE(
         console.error('Failed to delete migraine entry:', error)
         return new NextResponse('Internal Server Error', { status: 500 })
     }
-}
+})

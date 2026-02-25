@@ -8,6 +8,7 @@ import { MIGRAINE_USER_EMAIL } from '@/lib/whitelist'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { logger } from '@/lib/logger'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 // Feature gater
 const ALLOWED_USER = MIGRAINE_USER_EMAIL
@@ -32,7 +33,7 @@ export async function GET(req: NextRequest) {
 }
 
 // POST
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     return withTiming('migraine POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -129,4 +130,4 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     });
-}
+})

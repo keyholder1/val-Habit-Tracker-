@@ -4,8 +4,9 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { EVENTS, logEvent } from '@/lib/events'
 import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
+import { withRateLimit } from '@/lib/withRateLimit'
 
-export async function PATCH(
+export const PATCH = withRateLimit(async function PATCH(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
@@ -113,9 +114,9 @@ export async function PATCH(
         console.error('Failed to update goal:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})
 
-export async function DELETE(
+export const DELETE = withRateLimit(async function DELETE(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
@@ -185,4 +186,4 @@ export async function DELETE(
         console.error('🔴 [API DELETE] ❌ CRASH:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})

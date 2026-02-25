@@ -8,6 +8,7 @@ import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
@@ -61,7 +62,7 @@ export async function GET(
 }
 
 // PATCH - Update a project diary entry
-export async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
+export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { params }: { params: { id: string } }) {
     return withTiming('projects PATCH', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -142,10 +143,10 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
         }
     })
-}
+})
 
 // DELETE - Delete a project diary entry
-export async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
+export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { params }: { params: { id: string } }) {
     return withTiming('projects DELETE', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -184,4 +185,4 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
         }
     })
-}
+})

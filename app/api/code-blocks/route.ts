@@ -4,8 +4,9 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { EVENTS, logEvent } from '@/lib/events'
 import { assertProjectAccess } from '@/lib/whitelist'
+import { withRateLimit } from '@/lib/withRateLimit'
 
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         assertProjectAccess(session)
@@ -47,4 +48,4 @@ export async function POST(req: NextRequest) {
         }
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
-}
+})

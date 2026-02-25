@@ -8,11 +8,12 @@ import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { logger } from '@/lib/logger'
 import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
 // POST - Create a new project diary entry
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     return withTiming('projects POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -77,7 +78,7 @@ export async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
         }
     })
-}
+})
 
 // GET - List projects for the user
 export async function GET(req: NextRequest) {
