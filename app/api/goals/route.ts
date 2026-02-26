@@ -12,7 +12,7 @@ import { withRateLimit } from '@/lib/withRateLimit'
 export const dynamic = 'force-dynamic'
 
 // GET - List all goals for the user
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     console.log('🔵 [API /api/goals GET] Handler called')
     try {
         const session = await getServerSession(authOptions)
@@ -57,7 +57,7 @@ export async function GET(req: NextRequest) {
         console.error('🔵 [API /api/goals GET] ERROR:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})
 
 // POST - Create a new goal
 export const POST = withRateLimit(async function POST(req: NextRequest) {

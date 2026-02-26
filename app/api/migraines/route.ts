@@ -13,7 +13,7 @@ import { withRateLimit } from '@/lib/withRateLimit'
 export const dynamic = 'force-dynamic'
 
 // GET - List all migraine entries for the user
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     return withTiming('migraines GET', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-}
+})
 
 // POST - Create or update migraine entry
 export const POST = withRateLimit(async function POST(req: NextRequest) {

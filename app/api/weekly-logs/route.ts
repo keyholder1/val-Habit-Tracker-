@@ -13,7 +13,7 @@ import { withRateLimit } from '@/lib/withRateLimit'
 export const dynamic = 'force-dynamic'
 
 // GET - Get weekly log for a specific goal and week
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.email) {
@@ -98,7 +98,7 @@ export async function GET(req: NextRequest) {
         console.error('Error fetching weekly log:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})
 
 // POST - Create or update weekly log
 export const POST = withRateLimit(async function POST(req: NextRequest) {

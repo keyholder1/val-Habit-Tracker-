@@ -81,7 +81,7 @@ export const POST = withRateLimit(async function POST(req: NextRequest) {
 })
 
 // GET - List projects for the user
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     return withTiming('projects GET', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -137,4 +137,4 @@ export async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
         }
     })
-}
+})

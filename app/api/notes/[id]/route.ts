@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
 // PATCH - Update a note
-export async function PATCH(
+export const PATCH = withRateLimit(async function PATCH(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
@@ -41,10 +42,10 @@ export async function PATCH(
         console.error('🔵 [API /api/notes/[id] PATCH] ERROR:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})
 
 // DELETE - Delete a note
-export async function DELETE(
+export const DELETE = withRateLimit(async function DELETE(
     req: NextRequest,
     { params }: { params: { id: string } }
 ) {
@@ -72,4 +73,4 @@ export async function DELETE(
         console.error('🔵 [API /api/notes/[id] DELETE] ERROR:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})

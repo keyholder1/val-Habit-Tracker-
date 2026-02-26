@@ -13,7 +13,7 @@ import { withRateLimit } from '@/lib/withRateLimit'
 // Feature gater
 const ALLOWED_USER = MIGRAINE_USER_EMAIL
 
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (session?.user?.email !== ALLOWED_USER) {
@@ -30,7 +30,7 @@ export async function GET(req: NextRequest) {
     } catch (error) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-}
+})
 
 // POST
 export const POST = withRateLimit(async function POST(req: NextRequest) {

@@ -2,11 +2,12 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
+import { withRateLimit } from '@/lib/withRateLimit'
 
 export const dynamic = 'force-dynamic'
 
 // GET - List all notes for the user
-export async function GET(req: NextRequest) {
+export const GET = withRateLimit(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
@@ -26,10 +27,10 @@ export async function GET(req: NextRequest) {
         console.error('🔵 [API /api/notes GET] ERROR:', error.message, error)
         return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
-}
+})
 
 // POST - Create a new note
-export async function POST(req: NextRequest) {
+export const POST = withRateLimit(async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
@@ -60,4 +61,4 @@ export async function POST(req: NextRequest) {
         console.error('🔵 [API /api/notes POST] ERROR:', error.message, error)
         return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
-}
+})
