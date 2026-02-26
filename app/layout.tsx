@@ -2,6 +2,11 @@ import type { Metadata } from 'next'
 import './globals.css'
 import AuthProvider from '@/components/AuthProvider'
 import BackgroundController from '@/components/background/BackgroundController'
+import { validateEnv } from '@/lib/envCheck'
+
+// Validate required environment variables on server startup
+validateEnv()
+
 
 export const metadata: Metadata = {
     title: 'Habit Tracker - Personal Analytics',
