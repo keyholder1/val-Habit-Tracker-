@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import AnalyticsDashboard from '@/components/analytics/AnalyticsDashboard'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default async function AnalyticsPage() {
     const session = await getServerSession(authOptions)
@@ -12,5 +13,9 @@ export default async function AnalyticsPage() {
         redirect('/login')
     }
 
-    return <AnalyticsDashboard />
+    return (
+        <ErrorBoundary>
+            <AnalyticsDashboard />
+        </ErrorBoundary>
+    )
 }

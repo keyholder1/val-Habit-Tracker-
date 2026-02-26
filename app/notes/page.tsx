@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth/next'
 import { redirect } from 'next/navigation'
 import { authOptions } from '@/lib/auth'
 import NotesDashboard from '@/components/notes/NotesDashboard'
+import { ErrorBoundary } from '@/components/ErrorBoundary'
 
 export default async function NotesPage() {
     const session = await getServerSession(authOptions)
@@ -12,5 +13,9 @@ export default async function NotesPage() {
         redirect('/login')
     }
 
-    return <NotesDashboard />
+    return (
+        <ErrorBoundary>
+            <NotesDashboard />
+        </ErrorBoundary>
+    )
 }
