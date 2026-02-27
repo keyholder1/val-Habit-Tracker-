@@ -169,6 +169,10 @@ export async function GET(req: NextRequest) {
         return NextResponse.json({
             data: Object.values(dailyData),
             migraineEnabled: isAuthorized
+        }, {
+            headers: {
+                'Cache-Control': 'private, max-age=60',
+            },
         })
     } catch (error) {
         console.error('Month View API Error:', error)

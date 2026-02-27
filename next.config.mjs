@@ -1,5 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    // Enable response compression
+    compress: true,
     // Enable experimental features for better performance
     experimental: {
         optimizePackageImports: ['recharts', 'framer-motion'],
