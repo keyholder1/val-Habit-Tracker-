@@ -9,6 +9,7 @@ import { withTiming } from '@/lib/timing'
 import { weeklyLogSchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { withTimeout } from '@/lib/withTimeout'
 
 export const dynamic = 'force-dynamic'
 
@@ -101,7 +102,7 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
 })
 
 // POST - Create or update weekly log
-export const POST = withRateLimit(async function POST(req: NextRequest) {
+export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     return withTiming('weekly-logs POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -195,4 +196,4 @@ export const POST = withRateLimit(async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-})
+}))

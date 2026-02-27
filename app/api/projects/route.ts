@@ -9,11 +9,12 @@ import { logger } from '@/lib/logger'
 import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { withTimeout } from '@/lib/withTimeout'
 
 export const dynamic = 'force-dynamic'
 
 // POST - Create a new project diary entry
-export const POST = withRateLimit(async function POST(req: NextRequest) {
+export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     return withTiming('projects POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -78,7 +79,7 @@ export const POST = withRateLimit(async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
         }
     })
-})
+}))
 
 // GET - List projects for the user
 export const GET = withRateLimit(async function GET(req: NextRequest) {

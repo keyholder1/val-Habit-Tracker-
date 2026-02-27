@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { withTimeout } from '@/lib/withTimeout'
 
 export const dynamic = 'force-dynamic'
 
@@ -30,7 +31,7 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
 })
 
 // POST - Create a new note
-export const POST = withRateLimit(async function POST(req: NextRequest) {
+export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
@@ -61,4 +62,4 @@ export const POST = withRateLimit(async function POST(req: NextRequest) {
         console.error('🔵 [API /api/notes POST] ERROR:', error.message, error)
         return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
-})
+}))
