@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { sanitizeNoteTitle, sanitizeLongText } from '@/lib/sanitizeInput'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,7 +40,9 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
         }
 
         const body = await req.json()
-        const { title, content } = body
+        // Sanitize inputs before validation
+        const title = sanitizeNoteTitle(body.title)
+        const content = sanitizeLongText(body.content)
 
         if (!title || !content) {
             return NextResponse.json({ error: 'Title and content are required' }, { status: 400 })

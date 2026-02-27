@@ -9,6 +9,7 @@ import { goalSchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { sanitizeGoalName } from '@/lib/sanitizeInput'
 
 export const dynamic = 'force-dynamic'
 
@@ -86,6 +87,8 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
             console.log('🟢 [API /api/goals POST] Resolved userId:', userId)
 
             const body = await req.json()
+            // Sanitize inputs before validation
+            if (body.name) body.name = sanitizeGoalName(body.name)
             console.log('🟢 [API /api/goals POST] Body:', JSON.stringify(body))
             const result = goalSchema.safeParse(body)
 

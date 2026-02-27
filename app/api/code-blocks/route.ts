@@ -6,6 +6,7 @@ import { EVENTS, logEvent } from '@/lib/events'
 import { assertProjectAccess } from '@/lib/whitelist'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { sanitizeNoteTitle, sanitizeLongText } from '@/lib/sanitizeInput'
 
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     try {
@@ -13,7 +14,10 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
         assertProjectAccess(session)
 
         const body = await req.json()
-        const { projectId, title, codeContent, language, notes } = body
+        // Sanitize inputs before validation
+        const { projectId, codeContent, language } = body
+        const title = sanitizeNoteTitle(body.title)
+        const notes = sanitizeLongText(body.notes || '')
 
         if (!projectId || !title || !codeContent) {
             return NextResponse.json({ error: 'Missing required fields' }, { status: 400 })

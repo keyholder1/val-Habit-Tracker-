@@ -10,6 +10,7 @@ import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { sanitizeProjectTitle, sanitizeLongText } from '@/lib/sanitizeInput'
 
 export const dynamic = 'force-dynamic'
 
@@ -29,6 +30,9 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
             }
 
             const body = await req.json()
+            // Sanitize inputs before validation
+            if (body.projectName) body.projectName = sanitizeProjectTitle(body.projectName)
+            if (body.projectDescription) body.projectDescription = sanitizeLongText(body.projectDescription)
             const result = projectEntrySchema.safeParse(body)
 
             if (!result.success) {
