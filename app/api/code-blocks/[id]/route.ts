@@ -7,6 +7,7 @@ import { EVENTS, logEventSafe } from '@/lib/events'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { formatApiError } from '@/lib/apiError'
 
 // 1MB limit in bytes
 const MAX_CODE_SIZE = 1024 * 1024
@@ -85,8 +86,8 @@ export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { para
             if (error.code === 'P2025') {
                 return NextResponse.json({ error: 'Code block not found' }, { status: 404 })
             }
-            console.error('Error updating code block:', error)
-            return new NextResponse('Internal Error', { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 })
@@ -135,8 +136,8 @@ export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { pa
             if (error.code === 'P2025') {
                 return NextResponse.json({ error: 'Code block not found' }, { status: 404 })
             }
-            console.error('Error deleting code block:', error)
-            return new NextResponse('Internal Error', { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 })

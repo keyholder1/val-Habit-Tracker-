@@ -10,6 +10,7 @@ import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeGoalName } from '@/lib/sanitizeInput'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -56,8 +57,8 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
         console.log('🔵 [API /api/goals GET] Returning goals:', goals)
         return NextResponse.json(goals)
     } catch (error) {
-        console.error('🔵 [API /api/goals GET] ERROR:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }))
 
@@ -144,9 +145,8 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
 
             return NextResponse.json(goal)
         } catch (error) {
-            console.error('🟢 [API /api/goals POST] ❌ ERROR:', error)
-            logger.logError('Failed to create goal', error)
-            return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }))

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeNoteTitle, sanitizeLongText } from '@/lib/sanitizeInput'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -26,8 +27,8 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
 
         return NextResponse.json(notes)
     } catch (error: any) {
-        console.error('🔵 [API /api/notes GET] ERROR:', error.message, error)
-        return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }))
 
@@ -62,7 +63,7 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
         console.log('🔵 [API /api/notes POST] Created note:', note.id)
         return NextResponse.json(note)
     } catch (error: any) {
-        console.error('🔵 [API /api/notes POST] ERROR:', error.message, error)
-        return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }))

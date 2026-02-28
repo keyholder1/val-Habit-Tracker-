@@ -7,6 +7,7 @@ import { assertProjectAccess } from '@/lib/whitelist'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeNoteTitle, sanitizeLongText } from '@/lib/sanitizeInput'
+import { formatApiError } from '@/lib/apiError'
 
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     try {
@@ -51,6 +52,7 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
         if (error.message.includes('Unauthorized')) {
             return NextResponse.json({ error: error.message }, { status: 403 })
         }
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }))

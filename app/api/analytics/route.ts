@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getAnalyticsData } from '@/lib/analytics/getAnalyticsData'
 import { withTimeout } from '@/lib/withTimeout'
+import { formatApiError } from '@/lib/apiError'
 
 
 export const dynamic = 'force-dynamic'
@@ -65,10 +66,10 @@ export const GET = withTimeout(async function GET(req: NextRequest) {
             },
         })
     } catch (error) {
-        console.error('Error fetching analytics:', error)
+        const apiErr = formatApiError(error)
         return NextResponse.json(
-            { error: 'Internal server error' },
-            { status: 500 }
+            { error: apiErr.message },
+            { status: apiErr.status }
         )
     }
 })

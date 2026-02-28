@@ -11,6 +11,7 @@ import { projectEntrySchema } from '@/lib/validations'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeProjectTitle, sanitizeLongText } from '@/lib/sanitizeInput'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -79,8 +80,8 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
 
             return NextResponse.json(project)
         } catch (error: any) {
-            logger.logError('Create Project Error', error)
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }))
@@ -138,8 +139,8 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
                 }
             })
         } catch (error: any) {
-            logger.logError('List Projects Error', error)
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }))

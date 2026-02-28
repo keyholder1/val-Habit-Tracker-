@@ -10,6 +10,7 @@ import { withTiming } from '@/lib/timing'
 import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { formatApiError } from '@/lib/apiError'
 
 // Feature gater
 const ALLOWED_USER = MIGRAINE_USER_EMAIL
@@ -29,7 +30,8 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
 
         return NextResponse.json(entries)
     } catch (error) {
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }))
 
@@ -127,8 +129,8 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
 
             return NextResponse.json(entry)
         } catch (error) {
-            logger.logError('Migraine API Error', error)
-            return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     });
 }))

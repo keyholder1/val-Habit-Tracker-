@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -39,8 +40,8 @@ export const PATCH = withRateLimit(async function PATCH(
 
         return NextResponse.json(updatedNote)
     } catch (error) {
-        console.error('🔵 [API /api/notes/[id] PATCH] ERROR:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })
 
@@ -70,7 +71,7 @@ export const DELETE = withRateLimit(async function DELETE(
 
         return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('🔵 [API /api/notes/[id] DELETE] ERROR:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })

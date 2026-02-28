@@ -10,6 +10,7 @@ import { logger } from '@/lib/logger'
 import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -59,8 +60,8 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
                 total,
             })
         } catch (error) {
-            logger.logError('Failed to fetch migraine entries', error)
-            return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }))
@@ -136,8 +137,8 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
 
             return NextResponse.json(entry)
         } catch (error) {
-            logger.logError('Failed to save migraine entry', error)
-            return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }))

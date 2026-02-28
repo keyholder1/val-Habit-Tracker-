@@ -5,6 +5,7 @@ import { prisma } from '@/lib/db'
 import { EVENTS, logEvent } from '@/lib/events'
 import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { formatApiError } from '@/lib/apiError'
 
 export const PATCH = withRateLimit(async function PATCH(
     req: NextRequest,
@@ -111,8 +112,8 @@ export const PATCH = withRateLimit(async function PATCH(
 
         return NextResponse.json(updatedGoal)
     } catch (error) {
-        console.error('Failed to update goal:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })
 
@@ -183,7 +184,7 @@ export const DELETE = withRateLimit(async function DELETE(
         console.log('🔴 [API DELETE] ✅ Deletion complete for goal:', deletedGoal.name)
         return NextResponse.json({ success: true })
     } catch (error) {
-        console.error('🔴 [API DELETE] ❌ CRASH:', error)
-        return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })

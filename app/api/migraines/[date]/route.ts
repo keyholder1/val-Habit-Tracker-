@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { assertMigraineAccess } from '@/lib/whitelist'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { formatApiError } from '@/lib/apiError'
 
 // ...
 
@@ -48,8 +49,8 @@ export async function GET(
         return NextResponse.json(entry)
 
     } catch (error) {
-        console.error('Failed to fetch single migraine entry:', error)
-        return new NextResponse('Internal Server Error', { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 }
 export const DELETE = withRateLimit(async function DELETE(
@@ -90,7 +91,7 @@ export const DELETE = withRateLimit(async function DELETE(
         if (error.code === 'P2025') {
             return new NextResponse('Entry not found', { status: 404 })
         }
-        console.error('Failed to delete migraine entry:', error)
-        return new NextResponse('Internal Server Error', { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })

@@ -9,6 +9,7 @@ import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,8 +56,8 @@ export async function GET(
 
             return NextResponse.json(project)
         } catch (error: any) {
-            console.error('Get Project Error:', error)
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 }
@@ -139,8 +140,8 @@ export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { para
             if (error.code === 'P2025') {
                 return NextResponse.json({ error: 'Project not found' }, { status: 404 })
             }
-            console.error('Error updating project:', error)
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 })
@@ -181,8 +182,8 @@ export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { pa
             if (error.code === 'P2025') {
                 return NextResponse.json({ error: 'Project not found' }, { status: 404 })
             }
-            console.error('Error deleting project:', error)
-            return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+            const apiErr = formatApiError(error)
+            return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
     })
 })

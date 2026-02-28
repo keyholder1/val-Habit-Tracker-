@@ -4,6 +4,7 @@ import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { isMigraineUser } from '@/lib/whitelist'
 import { withTimeout } from '@/lib/withTimeout'
+import { formatApiError } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -176,7 +177,7 @@ export const GET = withTimeout(async function GET(req: NextRequest) {
             },
         })
     } catch (error) {
-        console.error('Month View API Error:', error)
-        return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
+        const apiErr = formatApiError(error)
+        return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
 })
