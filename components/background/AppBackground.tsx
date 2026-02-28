@@ -3,14 +3,16 @@
 import React, { useState, useEffect } from 'react'
 import LiquidEther from './LiquidEther'
 import { ErrorBoundary } from '../ErrorBoundary'
+import { useSafeUnmount } from '@/hooks/useSafeUnmount'
 
 export default function AppBackground() {
     const [isLoading, setIsLoading] = useState(true)
     const [hasTimedOut, setHasTimedOut] = useState(false)
+    const { isMountedRef } = useSafeUnmount()
 
     useEffect(() => {
         const timer = setTimeout(() => {
-            if (isLoading) {
+            if (isLoading && isMountedRef.current) {
                 console.warn('⚠️ LiquidEther background timed out loading.')
                 setHasTimedOut(true)
                 setIsLoading(false)

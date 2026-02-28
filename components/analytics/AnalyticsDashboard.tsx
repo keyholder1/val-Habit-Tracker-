@@ -5,6 +5,7 @@ import Link from 'next/link'
 import dynamic from 'next/dynamic'
 import LazyGraph from './LazyGraph'
 import { useBreakpoint } from '@/hooks/useBreakpoint'
+import { useSafeUnmount } from '@/hooks/useSafeUnmount'
 
 const DailyCompletionTrend = dynamic(() => import('./DailyCompletionTrend'), { ssr: false })
 const WeeklyCompletionTrend = dynamic(() => import('./WeeklyCompletionTrend'), { ssr: false })
@@ -64,6 +65,7 @@ export default function AnalyticsDashboard() {
     const [activeSection, setActiveSection] = useState<Section>('trends')
     const [selectedYear, setSelectedYear] = useState<number>(new Date().getFullYear())
     const { isMobile } = useBreakpoint()
+    const { isMountedRef } = useSafeUnmount()
 
     const sections = [
         { id: 'trends' as Section, name: 'Trends', count: 6 },

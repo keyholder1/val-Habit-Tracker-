@@ -3,6 +3,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import ProjectEntryForm from './ProjectEntryForm'
 import ProjectEntryCard from './ProjectEntryCard'
+import { useSafeUnmount } from '@/hooks/useSafeUnmount'
 
 interface ProjectDiaryPanelProps {
     isOpen: boolean
@@ -16,6 +17,7 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
     const [selectedProject, setSelectedProject] = useState<any | null>(null)
     const [page, setPage] = useState(1)
     const [hasMore, setHasMore] = useState(true)
+    const { isMountedRef } = useSafeUnmount()
 
     const loadProjects = useCallback(async (pageNum: number, reset = false) => {
         setLoading(true)
@@ -28,6 +30,7 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
             if (res.ok) {
                 const data = await res.json()
                 const newProjects = data.data
+                if (!isMountedRef.current) return
                 setProjects(prev => reset ? newProjects : [...prev, ...newProjects])
                 setHasMore(newProjects.length === 20)
                 setPage(pageNum)
@@ -35,7 +38,7 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
         } catch (error) {
             console.error('Failed to load projects', error)
         } finally {
-            setLoading(false)
+            if (isMountedRef.current) setLoading(false)
         }
     }, [])
 
@@ -57,13 +60,14 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
             const res = await fetch(`/api/projects/${projectId}`)
             if (res.ok) {
                 const project = await res.json()
+                if (!isMountedRef.current) return
                 setSelectedProject(project)
                 setMode('detail')
             }
         } catch (error) {
             console.error('Failed to load project details', error)
         } finally {
-            setLoading(false)
+            if (isMountedRef.current) setLoading(false)
         }
     }
 
@@ -76,7 +80,7 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
                 method: 'DELETE'
             })
             if (res.ok) {
-                setProjects(prev => prev.filter(p => p.id !== projectId))
+                if (isMountedRef.current) setProjects(prev => prev.filter(p => p.id !== projectId))
             } else {
                 const data = await res.json()
                 alert(data.error || 'Failed to delete project')
@@ -85,7 +89,7 @@ export default function ProjectDiaryPanel({ isOpen, onClose }: ProjectDiaryPanel
             console.error('Failed to delete project', error)
             alert('An unexpected error occurred')
         } finally {
-            setLoading(false)
+            if (isMountedRef.current) setLoading(false)
         }
     }
 
