@@ -3,10 +3,11 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { isMigraineUser } from '@/lib/whitelist'
+import { withTimeout } from '@/lib/withTimeout'
 
 export const dynamic = 'force-dynamic'
 
-export async function GET(req: NextRequest) {
+export const GET = withTimeout(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id || !session?.user?.email) {
@@ -178,4 +179,4 @@ export async function GET(req: NextRequest) {
         console.error('Month View API Error:', error)
         return NextResponse.json({ error: 'Internal Server Error' }, { status: 500 })
     }
-}
+})

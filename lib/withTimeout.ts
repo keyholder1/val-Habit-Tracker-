@@ -9,7 +9,7 @@ import { NextRequest, NextResponse } from 'next/server'
 
 type RouteHandler = (req: NextRequest, context?: any) => Promise<NextResponse | Response>
 
-const TIMEOUT_MS = 8_000
+const TIMEOUT_MS = 10_000
 
 /**
  * Wrap a route handler with a timeout.

@@ -9,11 +9,12 @@ import { migraineEntrySchema } from '@/lib/validations'
 import { logger } from '@/lib/logger'
 import { invalidateAnalyticsCache } from '@/lib/analytics/getAnalyticsData'
 import { withRateLimit } from '@/lib/withRateLimit'
+import { withTimeout } from '@/lib/withTimeout'
 
 export const dynamic = 'force-dynamic'
 
 // GET - List all migraine entries for the user
-export const GET = withRateLimit(async function GET(req: NextRequest) {
+export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest) {
     return withTiming('migraines GET', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -62,10 +63,10 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-})
+}))
 
 // POST - Create or update migraine entry
-export const POST = withRateLimit(async function POST(req: NextRequest) {
+export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
     return withTiming('migraines POST', async () => {
         try {
             const session = await getServerSession(authOptions)
@@ -139,4 +140,4 @@ export const POST = withRateLimit(async function POST(req: NextRequest) {
             return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
         }
     })
-})
+}))

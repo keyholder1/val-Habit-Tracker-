@@ -14,7 +14,7 @@ import { withTimeout } from '@/lib/withTimeout'
 // Feature gater
 const ALLOWED_USER = MIGRAINE_USER_EMAIL
 
-export const GET = withRateLimit(async function GET(req: NextRequest) {
+export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (session?.user?.email !== ALLOWED_USER) {
@@ -31,7 +31,7 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
     } catch (error) {
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-})
+}))
 
 // POST
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {

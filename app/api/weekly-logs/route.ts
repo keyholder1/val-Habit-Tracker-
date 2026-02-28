@@ -14,7 +14,7 @@ import { withTimeout } from '@/lib/withTimeout'
 export const dynamic = 'force-dynamic'
 
 // GET - Get weekly log for a specific goal and week
-export const GET = withRateLimit(async function GET(req: NextRequest) {
+export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.email) {
@@ -99,7 +99,7 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
         console.error('Error fetching weekly log:', error)
         return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
     }
-})
+}))
 
 // POST - Create or update weekly log
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {

@@ -9,7 +9,7 @@ import { sanitizeNoteTitle, sanitizeLongText } from '@/lib/sanitizeInput'
 export const dynamic = 'force-dynamic'
 
 // GET - List all notes for the user
-export const GET = withRateLimit(async function GET(req: NextRequest) {
+export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest) {
     try {
         const session = await getServerSession(authOptions)
         if (!session?.user?.id) {
@@ -29,7 +29,7 @@ export const GET = withRateLimit(async function GET(req: NextRequest) {
         console.error('🔵 [API /api/notes GET] ERROR:', error.message, error)
         return NextResponse.json({ error: 'Internal server error', details: error.message }, { status: 500 })
     }
-})
+}))
 
 // POST - Create a new note
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {

@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth/next'
 import { authOptions } from '@/lib/auth'
 import { prisma } from '@/lib/db'
 import { getAnalyticsData } from '@/lib/analytics/getAnalyticsData'
+import { withTimeout } from '@/lib/withTimeout'
 
 
 export const dynamic = 'force-dynamic'
@@ -15,7 +16,7 @@ export const dynamic = 'force-dynamic'
  * Query parameters:
  * - days: number of days to include (default: 90)
  */
-export async function GET(req: NextRequest) {
+export const GET = withTimeout(async function GET(req: NextRequest) {
     console.log('🔵 [API /api/analytics GET] Handler HIT')
     try {
         // Authenticate
@@ -70,4 +71,4 @@ export async function GET(req: NextRequest) {
             { status: 500 }
         )
     }
-}
+})
