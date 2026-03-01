@@ -186,13 +186,13 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                         </button>
                     ) : (
                         <form onSubmit={handleAddGoal} className="space-y-3 animate-in fade-in slide-in-from-top-2 duration-200">
-                            <div className="flex gap-2">
+                            <div className="flex gap-2 min-w-0 flex-wrap sm:flex-nowrap overflow-hidden">
                                 <input
                                     type="text"
                                     placeholder="Goal name..."
                                     value={newGoalName}
                                     onChange={(e) => setNewGoalName(e.target.value)}
-                                    className="flex-1 p-3 sm:p-2 border rounded-lg text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
+                                    className="flex-1 min-w-0 p-3 sm:p-2 border rounded-lg text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none"
                                     autoFocus
                                 />
                                 <input
@@ -205,7 +205,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                         e.currentTarget.select();
                                     }}
                                     onChange={(e) => setNewGoalSymbol(e.target.value)}
-                                    className={`w-16 p-3 sm:p-2 border rounded-lg text-center text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${newGoalSymbol ? 'caret-transparent' : ''}`}
+                                    className={`w-full sm:w-16 max-w-[4rem] sm:max-w-[4rem] min-w-0 p-3 sm:p-2 border rounded-lg text-center text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none overflow-hidden text-ellipsis ${newGoalSymbol ? 'caret-transparent' : ''}`}
                                 />
                             </div>
                             <div className="space-y-3 sm:space-y-2">
@@ -317,7 +317,7 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                             >
                                 {editingId === goal.id ? (
                                     <div className="space-y-3">
-                                        <div className="flex gap-2">
+                                        <div className="flex gap-2 min-w-0 overflow-hidden">
                                             <input
                                                 value={editSymbol}
                                                 onFocus={(e) => e.target.select()}
@@ -326,13 +326,13 @@ export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
                                                     e.currentTarget.select();
                                                 }}
                                                 onChange={(e) => setEditSymbol(e.target.value)}
-                                                className={`w-14 p-2 text-center border rounded text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none ${editSymbol ? 'caret-transparent' : ''}`}
+                                                className={`w-14 max-w-[3.5rem] min-w-0 p-2 text-center border rounded text-base sm:text-sm bg-white/80 focus:ring-1 focus:ring-primary-400 outline-none overflow-hidden text-ellipsis ${editSymbol ? 'caret-transparent' : ''}`}
                                                 maxLength={8}
                                             />
                                             <input
                                                 value={editName}
                                                 onChange={(e) => setEditName(e.target.value)}
-                                                className="flex-1 p-2 border rounded text-base sm:text-sm"
+                                                className="flex-1 min-w-0 p-2 border rounded text-base sm:text-sm"
                                             />
                                         </div>
                                         <div className="flex items-center gap-2">
