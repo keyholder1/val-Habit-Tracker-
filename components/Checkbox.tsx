@@ -19,6 +19,9 @@ export default function Checkbox({ checked, onChange, disabled }: CheckboxProps)
             whileHover={disabled ? {} : { scale: 1.08 }}
             whileTap={disabled ? {} : { scale: 0.95 }}
             disabled={disabled}
+            role="checkbox"
+            aria-checked={checked}
+            aria-label="Toggle habit completion"
             className={`
                 relative ${size} rounded border-[1.5px] sm:border-2 transition-all focus:outline-none 
                 ${disabled ? 'opacity-30 cursor-not-allowed bg-neutral-100 border-neutral-200' : 'focus:ring-2 focus:ring-primary-300 focus:ring-offset-1'}

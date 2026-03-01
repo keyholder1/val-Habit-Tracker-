@@ -105,6 +105,7 @@ export default function DashboardLayout() {
                             <button
                                 onClick={() => setIsGoalSidebarOpen(true)}
                                 className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500 min-w-[40px] min-h-[40px] flex items-center justify-center shrink-0"
+                                aria-label="Open goals sidebar"
                             >
                                 ☰
                             </button>
@@ -163,6 +164,7 @@ export default function DashboardLayout() {
                                 onClick={() => queryClient.invalidateQueries()}
                                 className="p-2 hover:bg-neutral-100 rounded-lg text-neutral-500 hover:text-primary-600 transition-colors"
                                 title="Refresh Data"
+                                aria-label="Refresh all data"
                             >
                                 <svg className={`w-5 h-5 ${goalsLoading ? 'animate-spin' : ''}`} fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
@@ -185,6 +187,7 @@ export default function DashboardLayout() {
                         <button
                             onClick={() => signOut({ callbackUrl: '/login' })}
                             className="px-2 sm:px-4 py-1.5 sm:py-2 bg-neutral-100 hover:bg-neutral-200 rounded-lg text-xs sm:text-sm font-medium transition-colors whitespace-nowrap min-h-[32px] sm:min-h-[40px]"
+                            aria-label="Sign out of your account"
                         >
                             Sign Out
                         </button>
@@ -261,6 +264,7 @@ export default function DashboardLayout() {
                         <button
                             onClick={() => setIsDiaryOpen(true)}
                             className="p-3 bg-white hover:bg-neutral-50 text-neutral-600 hover:text-primary-600 rounded-full shadow-lg hover:shadow-xl transition-all group relative border border-neutral-200"
+                            aria-label="Open migraine diary"
                         >
                             <span className="text-xl">📅</span>
                         </button>
@@ -268,6 +272,7 @@ export default function DashboardLayout() {
                         <button
                             onClick={() => setIsMigraineModalOpen(true)}
                             className="p-4 bg-primary-600 hover:bg-primary-700 text-white rounded-full shadow-lg hover:shadow-xl transition-all group relative"
+                            aria-label="Log migraine entry"
                         >
                             <span className="text-2xl">🧠</span>
                         </button>
@@ -279,6 +284,7 @@ export default function DashboardLayout() {
                         <button
                             onClick={() => setIsProjectPanelOpen(true)}
                             className="p-3 bg-white hover:bg-neutral-50 text-neutral-600 hover:text-indigo-600 rounded-full shadow-lg hover:shadow-xl transition-all group relative border border-neutral-200"
+                            aria-label="View project diary"
                         >
                             <span className="text-xl">🔐</span>
                         </button>
