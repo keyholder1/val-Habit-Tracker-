@@ -54,6 +54,7 @@ export default function LiquidEtherBackground({
     const intersectionObserverRef = useRef<IntersectionObserver | null>(null);
     const isVisibleRef = useRef(true);
     const resizeRafRef = useRef<number | null>(null);
+    const scrollCleanupRef = useRef<(() => void) | null>(null);
 
     useEffect(() => {
         if (!mountRef.current) return;
@@ -1141,7 +1142,50 @@ export default function LiquidEtherBackground({
         };
         applyOptionsFromProps();
 
+        // ── Mobile device detection: lower resolution to reduce GPU load ──
+        const isMobileDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+        if (isMobileDevice && webgl.output?.simulation) {
+            const sim = webgl.output.simulation;
+            sim.options.resolution = Math.min(sim.options.resolution, 0.25);
+            sim.resize();
+        }
+
         webgl.start();
+
+        // ── Scroll-speed detection: pause during fast scrolling ──
+        let lastScrollY = window.scrollY;
+        let lastScrollTime = performance.now();
+        let scrollPauseTimer: ReturnType<typeof setTimeout> | null = null;
+        let isScrollPaused = false;
+        const SCROLL_SPEED_THRESHOLD = 1500; // px/sec
+        const SCROLL_RESUME_DELAY = 300; // ms after scroll settles
+
+        const onScroll = () => {
+            const now = performance.now();
+            const dt = now - lastScrollTime;
+            if (dt > 0) {
+                const speed = (Math.abs(window.scrollY - lastScrollY) / dt) * 1000;
+                if (speed > SCROLL_SPEED_THRESHOLD && !isScrollPaused) {
+                    isScrollPaused = true;
+                    webglRef.current?.pause();
+                }
+            }
+            lastScrollY = window.scrollY;
+            lastScrollTime = now;
+
+            if (scrollPauseTimer) clearTimeout(scrollPauseTimer);
+            scrollPauseTimer = setTimeout(() => {
+                if (isScrollPaused && isVisibleRef.current && !document.hidden) {
+                    isScrollPaused = false;
+                    webglRef.current?.start();
+                }
+            }, SCROLL_RESUME_DELAY);
+        };
+        window.addEventListener('scroll', onScroll, { passive: true });
+        scrollCleanupRef.current = () => {
+            window.removeEventListener('scroll', onScroll);
+            if (scrollPauseTimer) clearTimeout(scrollPauseTimer);
+        };
 
         const io = new IntersectionObserver(
             entries => {
@@ -1173,6 +1217,7 @@ export default function LiquidEtherBackground({
 
         return () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
+            if (scrollCleanupRef.current) scrollCleanupRef.current();
             if (resizeObserverRef.current) {
                 try {
                     resizeObserverRef.current.disconnect();
