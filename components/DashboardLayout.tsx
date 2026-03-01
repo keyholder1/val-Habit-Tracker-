@@ -24,6 +24,7 @@ import ApiLatencyBadge from './dev/ApiLatencyBadge'
 import BuildTimestampTooltip from './dev/BuildTimestampTooltip'
 import KeyboardShortcutsOverlay from './dev/KeyboardShortcutsOverlay'
 import QuickCommandPalette from './ui/QuickCommandPalette'
+import { TimelineSkeleton } from './TimelineSkeleton'
 
 
 type ViewMode = 'month' | 'week'
@@ -234,9 +235,7 @@ export default function DashboardLayout() {
                             </div>
 
                             {goalsLoading ? (
-                                <div className="space-y-4">
-                                    <div className="animate-pulse bg-neutral-100 rounded-lg h-32" />
-                                </div>
+                                <TimelineSkeleton />
                             ) : (
                                 <WeekDashboard
                                     key={selectedWeekStart.toISOString()}
