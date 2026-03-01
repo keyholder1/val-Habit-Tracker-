@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { formatApiError } from '@/lib/apiError'
+import { guardWriteEndpoint } from '@/lib/rateLimitGuard'
 
 export const dynamic = 'force-dynamic'
 
@@ -104,6 +105,9 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
 
 // POST - Create or update weekly log
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
+    const guardResponse = guardWriteEndpoint(req)
+    if (guardResponse) return guardResponse
+
     return withTiming('weekly-logs POST', async () => {
         try {
             const session = await getServerSession(authOptions)

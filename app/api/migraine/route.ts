@@ -11,6 +11,7 @@ import { logger } from '@/lib/logger'
 import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { formatApiError } from '@/lib/apiError'
+import { guardWriteEndpoint } from '@/lib/rateLimitGuard'
 
 // Feature gater
 const ALLOWED_USER = MIGRAINE_USER_EMAIL
@@ -37,6 +38,9 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
 
 // POST
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
+    const guardResponse = guardWriteEndpoint(req)
+    if (guardResponse) return guardResponse
+
     return withTiming('migraine POST', async () => {
         try {
             const session = await getServerSession(authOptions)

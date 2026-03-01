@@ -11,6 +11,7 @@ import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeGoalName } from '@/lib/sanitizeInput'
 import { formatApiError } from '@/lib/apiError'
+import { guardWriteEndpoint } from '@/lib/rateLimitGuard'
 
 export const dynamic = 'force-dynamic'
 
@@ -64,6 +65,9 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
 
 // POST - Create a new goal
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
+    const guardResponse = guardWriteEndpoint(req)
+    if (guardResponse) return guardResponse
+
     return withTiming('goals POST', async () => {
         try {
             console.log('🟢 [API /api/goals POST] Handler called')

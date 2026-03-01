@@ -12,11 +12,15 @@ import { withRateLimit } from '@/lib/withRateLimit'
 import { withTimeout } from '@/lib/withTimeout'
 import { sanitizeProjectTitle, sanitizeLongText } from '@/lib/sanitizeInput'
 import { formatApiError } from '@/lib/apiError'
+import { guardWriteEndpoint } from '@/lib/rateLimitGuard'
 
 export const dynamic = 'force-dynamic'
 
 // POST - Create a new project diary entry
 export const POST = withRateLimit(withTimeout(async function POST(req: NextRequest) {
+    const guardResponse = guardWriteEndpoint(req)
+    if (guardResponse) return guardResponse
+
     return withTiming('projects POST', async () => {
         try {
             const session = await getServerSession(authOptions)
