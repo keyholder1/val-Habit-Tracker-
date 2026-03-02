@@ -1,3 +1,4 @@
+// Val Habit Tracker — last maintained: 2026-03-02
 export const dynamic = 'force-dynamic'
 
 import React from 'react'
