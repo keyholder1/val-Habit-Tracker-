@@ -6,7 +6,7 @@ import { assertProjectAccess } from '@/lib/whitelist'
 import { EVENTS, logEventSafe } from '@/lib/events'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
-import { formatApiError } from '@/lib/apiError'
+import { formatApiError, isPrismaNotFound, getErrorMessage } from '@/lib/apiError'
 
 // 1MB limit in bytes
 // 1MB limit in bytes
@@ -76,10 +76,11 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             })
 
             return NextResponse.json(block)
-        } catch (error: any) {
+        } catch (error) {
             console.error('Create CodeBlock Error:', error)
-            if (error.message.includes('Unauthorized')) {
-                return NextResponse.json({ error: error.message }, { status: 403 })
+            const msg = getErrorMessage(error)
+            if (msg.includes('Unauthorized')) {
+                return NextResponse.json({ error: msg }, { status: 403 })
             }
             const apiErr = formatApiError(error)
             return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })

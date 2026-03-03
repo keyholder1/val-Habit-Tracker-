@@ -9,7 +9,7 @@ import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { projectEntrySchema } from '@/lib/validations'
 import { withRateLimit } from '@/lib/withRateLimit'
-import { formatApiError } from '@/lib/apiError'
+import { formatApiError, isPrismaNotFound } from '@/lib/apiError'
 
 export const dynamic = 'force-dynamic'
 
@@ -55,7 +55,7 @@ export async function GET(
             }
 
             return NextResponse.json(project)
-        } catch (error: any) {
+        } catch (error) {
             const apiErr = formatApiError(error)
             return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
@@ -136,8 +136,8 @@ export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { para
             invalidateAnalyticsCache(session.user.id)
 
             return NextResponse.json(updated)
-        } catch (error: any) {
-            if (error.code === 'P2025') {
+        } catch (error) {
+            if (isPrismaNotFound(error)) {
                 return NextResponse.json({ error: 'Project not found' }, { status: 404 })
             }
             const apiErr = formatApiError(error)
@@ -178,8 +178,8 @@ export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { pa
             invalidateAnalyticsCache(session.user.id)
 
             return new NextResponse(null, { status: 204 })
-        } catch (error: any) {
-            if (error.code === 'P2025') {
+        } catch (error) {
+            if (isPrismaNotFound(error)) {
                 return NextResponse.json({ error: 'Project not found' }, { status: 404 })
             }
             const apiErr = formatApiError(error)

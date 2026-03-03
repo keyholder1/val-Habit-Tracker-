@@ -26,7 +26,7 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
         })
 
         return NextResponse.json(notes)
-    } catch (error: any) {
+    } catch (error) {
         const apiErr = formatApiError(error)
         return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }
@@ -62,7 +62,7 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
 
         console.log('🔵 [API /api/notes POST] Created note:', note.id)
         return NextResponse.json(note)
-    } catch (error: any) {
+    } catch (error) {
         const apiErr = formatApiError(error)
         return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
     }

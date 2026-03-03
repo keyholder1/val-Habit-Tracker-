@@ -4,7 +4,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { assertMigraineAccess } from '@/lib/whitelist'
 import { withRateLimit } from '@/lib/withRateLimit'
-import { formatApiError } from '@/lib/apiError'
+import { formatApiError, isPrismaNotFound } from '@/lib/apiError'
 
 // ...
 
@@ -87,8 +87,8 @@ export const DELETE = withRateLimit(async function DELETE(
         })
 
         return new NextResponse(null, { status: 204 })
-    } catch (error: any) {
-        if (error.code === 'P2025') {
+    } catch (error) {
+        if (isPrismaNotFound(error)) {
             return new NextResponse('Entry not found', { status: 404 })
         }
         const apiErr = formatApiError(error)

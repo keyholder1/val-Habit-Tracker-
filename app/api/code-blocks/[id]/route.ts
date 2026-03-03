@@ -7,7 +7,7 @@ import { EVENTS, logEventSafe } from '@/lib/events'
 import { checkIdempotency } from '@/lib/idempotency'
 import { withTiming } from '@/lib/timing'
 import { withRateLimit } from '@/lib/withRateLimit'
-import { formatApiError } from '@/lib/apiError'
+import { formatApiError, isPrismaNotFound } from '@/lib/apiError'
 
 // 1MB limit in bytes
 const MAX_CODE_SIZE = 1024 * 1024
@@ -82,8 +82,8 @@ export const PATCH = withRateLimit(async function PATCH(req: NextRequest, { para
             })
 
             return NextResponse.json(updated)
-        } catch (error: any) {
-            if (error.code === 'P2025') {
+        } catch (error) {
+            if (isPrismaNotFound(error)) {
                 return NextResponse.json({ error: 'Code block not found' }, { status: 404 })
             }
             const apiErr = formatApiError(error)
@@ -132,8 +132,8 @@ export const DELETE = withRateLimit(async function DELETE(req: NextRequest, { pa
             })
 
             return new NextResponse(null, { status: 204 })
-        } catch (error: any) {
-            if (error.code === 'P2025') {
+        } catch (error) {
+            if (isPrismaNotFound(error)) {
                 return NextResponse.json({ error: 'Code block not found' }, { status: 404 })
             }
             const apiErr = formatApiError(error)

@@ -83,7 +83,7 @@ export const POST = withRateLimit(withTimeout(async function POST(req: NextReque
             invalidateAnalyticsCache(session.user.id)
 
             return NextResponse.json(project)
-        } catch (error: any) {
+        } catch (error) {
             const apiErr = formatApiError(error)
             return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
@@ -142,7 +142,7 @@ export const GET = withRateLimit(withTimeout(async function GET(req: NextRequest
                     totalPages: Math.ceil(total / limit)
                 }
             })
-        } catch (error: any) {
+        } catch (error) {
             const apiErr = formatApiError(error)
             return NextResponse.json({ error: apiErr.message }, { status: apiErr.status })
         }
