@@ -23,10 +23,6 @@ interface WeekDashboardProps {
     onDateSelect?: (date: Date) => void
 }
 
-// Cache for recently viewed weeks' fetch results
-const weekDataCache = new Map<string, { timestamp: number }>()
-const CACHE_TTL = 30_000 // 30 seconds
-
 function WeekDashboardInner({ weekStartDate, goals, highlightDate, onDateSelect }: WeekDashboardProps) {
     const weekStartIso = useMemo(() => {
         const d = new Date(weekStartDate)

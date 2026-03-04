@@ -4,11 +4,11 @@ interface LogEntry {
     timestamp: string
     level: LogLevel
     message: string
-    context?: any
-    error?: any
+    context?: unknown
+    error?: unknown
 }
 
-function formatLog(level: LogLevel, message: string, context?: any, error?: any): string {
+function formatLog(level: LogLevel, message: string, context?: unknown, error?: unknown): string {
     const entry: LogEntry = {
         timestamp: new Date().toISOString(),
         level,
@@ -25,13 +25,13 @@ function formatLog(level: LogLevel, message: string, context?: any, error?: any)
 }
 
 export const logger = {
-    logInfo: (message: string, context?: any) => {
+    logInfo: (message: string, context?: unknown) => {
         console.log(formatLog('info', message, context))
     },
-    logWarn: (message: string, context?: any) => {
+    logWarn: (message: string, context?: unknown) => {
         console.warn(formatLog('warn', message, context))
     },
-    logError: (message: string, error?: any, context?: any) => {
+    logError: (message: string, error?: unknown, context?: unknown) => {
         console.error(formatLog('error', message, context, error))
     }
 }
