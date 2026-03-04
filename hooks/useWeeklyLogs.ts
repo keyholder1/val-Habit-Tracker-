@@ -1,5 +1,4 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { startOfWeek, formatISO } from 'date-fns'
 
 type WeeklyLog = {
     id: string
@@ -12,7 +11,6 @@ type WeeklyLog = {
 
 export function useWeeklyLog(goalId: string, weekStartDate: Date) {
     const queryClient = useQueryClient()
-    const formattedDate = formatISO(startOfWeek(weekStartDate, { weekStartsOn: 1 }), { representation: 'date' }) // YYYY-MM-DD
 
     // Using a normalized date string for cache key to ensure consistency
     // The API expects ISO string but our cache key should be stable
@@ -135,8 +133,6 @@ export function useWeeklyLog(goalId: string, weekStartDate: Date) {
 }
 
 export function useBulkWeeklyLogs(weekStartDate: Date) {
-    const formattedDate = formatISO(startOfWeek(weekStartDate, { weekStartsOn: 1 }), { representation: 'date' })
-
     return useQuery({
         queryKey: ['weeklyLogs', 'bulk', weekStartDate.toISOString()],
         queryFn: async () => {
