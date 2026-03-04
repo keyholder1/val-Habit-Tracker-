@@ -5,6 +5,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
+import { resolveIp } from '@/lib/resolveIp'
 
 // ── Config ──────────────────────────────────────────────────────────
 const WRITE_LIMIT = 100       // max write requests per window per IP
@@ -36,14 +37,6 @@ function ensureCleanup() {
 }
 
 // ── Core check ──────────────────────────────────────────────────────
-
-function resolveIp(req: NextRequest): string {
-    return (
-        req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-        req.headers.get('x-real-ip') ||
-        'unknown'
-    )
-}
 
 interface GuardResult {
     allowed: boolean

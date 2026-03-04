@@ -11,6 +11,7 @@ import { getServerSession } from 'next-auth'
 import { authOptions } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { isEmailAllowed } from '@/lib/whitelist'
+import { resolveIp } from '@/lib/resolveIp'
 
 type RouteHandler = (req: NextRequest, context?: any) => Promise<NextResponse | Response>
 
@@ -71,14 +72,4 @@ export function withRateLimit(handler: RouteHandler): RouteHandler {
 
         return response
     }
-}
-
-// ── Helpers ─────────────────────────────────────────────────────────
-
-function resolveIp(req: NextRequest): string {
-    return (
-        req.headers.get('x-forwarded-for')?.split(',')[0].trim() ||
-        req.headers.get('x-real-ip') ||
-        'unknown'
-    )
 }
