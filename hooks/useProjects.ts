@@ -22,6 +22,13 @@ export type CodeBlock = {
     createdAt: string
 }
 
+type Pagination = {
+    page: number
+    limit: number
+    total: number
+    totalPages: number
+}
+
 export function useProjects() {
     const queryClient = useQueryClient()
     const queryKey = ['projects']
@@ -31,7 +38,7 @@ export function useProjects() {
         queryFn: async () => {
             const res = await fetch('/api/projects')
             if (!res.ok) throw new Error('Failed to fetch projects')
-            return res.json() as Promise<{ data: ProjectEntry[], pagination: any }>
+            return res.json() as Promise<{ data: ProjectEntry[], pagination: Pagination }>
         },
     })
 

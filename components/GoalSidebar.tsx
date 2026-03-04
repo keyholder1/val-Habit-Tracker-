@@ -12,7 +12,6 @@ export interface GoalSidebarProps {
     selectedDate: Date
 }
 
-// getWeekStart is now imported from @/lib/dateUtils
 
 export function GoalSidebar({ selectedDate }: GoalSidebarProps) {
     const { goals, createGoal, updateGoal, archiveGoal, deleteGoal } = useGoals()
