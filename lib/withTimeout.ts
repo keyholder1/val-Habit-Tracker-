@@ -7,7 +7,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 
-type RouteHandler = (req: NextRequest, context?: any) => Promise<NextResponse | Response>
+type RouteHandler = (req: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse | Response>
 
 const TIMEOUT_MS = 10_000
 
@@ -16,7 +16,7 @@ const TIMEOUT_MS = 10_000
  * If the handler does not resolve within TIMEOUT_MS, a 504 response is returned.
  */
 export function withTimeout(handler: RouteHandler): RouteHandler {
-    return async (req: NextRequest, context?: any) => {
+    return async (req: NextRequest, context?: Record<string, unknown>) => {
         const controller = new AbortController()
 
         const timeout = new Promise<NextResponse>((resolve) => {
