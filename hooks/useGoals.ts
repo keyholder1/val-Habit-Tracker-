@@ -17,6 +17,15 @@ export function useGoals() {
     const queryClient = useQueryClient()
     const queryKey = ['goals']
 
+    const RELATED_QUERY_KEYS = [['weeklyLogs'], ['analytics'], ['monthView']] as const
+
+    function invalidateGoalCaches() {
+        queryClient.invalidateQueries({ queryKey })
+        for (const key of RELATED_QUERY_KEYS) {
+            queryClient.invalidateQueries({ queryKey: [...key] })
+        }
+    }
+
     const { data: goals, isLoading, error } = useQuery({
         queryKey,
         queryFn: async () => {
@@ -38,12 +47,7 @@ export function useGoals() {
             if (!res.ok) throw new Error('Failed to create goal')
             return res.json()
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey })
-            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
-            queryClient.invalidateQueries({ queryKey: ['analytics'] })
-            queryClient.invalidateQueries({ queryKey: ['monthView'] })
-        },
+        onSuccess: invalidateGoalCaches,
     })
 
     const updateGoal = useMutation({
@@ -56,12 +60,7 @@ export function useGoals() {
             if (!res.ok) throw new Error('Failed to update goal')
             return res.json()
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey })
-            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
-            queryClient.invalidateQueries({ queryKey: ['analytics'] })
-            queryClient.invalidateQueries({ queryKey: ['monthView'] })
-        },
+        onSuccess: invalidateGoalCaches,
     })
 
     const archiveGoal = useMutation({
@@ -74,12 +73,7 @@ export function useGoals() {
             if (!res.ok) throw new Error('Failed to archive goal')
             return res.json()
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey })
-            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
-            queryClient.invalidateQueries({ queryKey: ['analytics'] })
-            queryClient.invalidateQueries({ queryKey: ['monthView'] })
-        },
+        onSuccess: invalidateGoalCaches,
     })
 
     const deleteGoal = useMutation({
@@ -92,12 +86,7 @@ export function useGoals() {
             if (!res.ok) throw new Error('Failed to delete goal')
             return res.json()
         },
-        onSuccess: () => {
-            queryClient.invalidateQueries({ queryKey })
-            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
-            queryClient.invalidateQueries({ queryKey: ['analytics'] })
-            queryClient.invalidateQueries({ queryKey: ['monthView'] })
-        },
+        onSuccess: invalidateGoalCaches,
     })
 
     const deleteGoalPermanently = useMutation({
@@ -132,13 +121,7 @@ export function useGoals() {
                 queryClient.setQueryData(queryKey, context.previousGoals)
             }
         },
-        onSettled: () => {
-            // Always refetch after error or success
-            queryClient.invalidateQueries({ queryKey })
-            queryClient.invalidateQueries({ queryKey: ['weeklyLogs'] })
-            queryClient.invalidateQueries({ queryKey: ['analytics'] })
-            queryClient.invalidateQueries({ queryKey: ['monthView'] })
-        },
+        onSettled: invalidateGoalCaches,
     })
 
     return {
