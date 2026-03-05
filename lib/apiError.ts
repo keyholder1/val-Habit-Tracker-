@@ -28,13 +28,7 @@ export function formatApiError(error: unknown): { message: string; status: numbe
     const isDev = process.env.NODE_ENV === 'development'
 
     if (isDev) {
-        const msg =
-            error instanceof Error
-                ? error.message
-                : typeof error === 'string'
-                    ? error
-                    : 'Unknown error'
-        return { message: msg, status: 500 }
+        return { message: getErrorMessage(error), status: 500 }
     }
 
     // Production: log details server-side, return generic message to client
