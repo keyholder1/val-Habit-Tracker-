@@ -3,16 +3,19 @@ import { Prisma } from '@prisma/client'
 /**
  * Logs a system event within a transaction
  */
+
+interface EventParams {
+    userId: string
+    eventType: string
+    entityType: string
+    entityId: string
+    payload?: Prisma.InputJsonValue
+    eventSource?: string
+}
+
 export async function logEvent(
     tx: Prisma.TransactionClient,
-    params: {
-        userId: string
-        eventType: string
-        entityType: string
-        entityId: string
-        payload?: any
-        eventSource?: string
-    }
+    params: EventParams
 ) {
     return tx.eventLog.create({
         data: {
@@ -49,14 +52,7 @@ export const EVENTS = {
 import { prisma } from '@/lib/db'
 
 export async function logEventSafe(
-    params: {
-        userId: string
-        eventType: string
-        entityType: string
-        entityId: string
-        payload?: any
-        eventSource?: string
-    }
+    params: EventParams
 ) {
     // Fire and forget - detached from main request flow
     // This satisfies "DO NOT rollback main transaction"
