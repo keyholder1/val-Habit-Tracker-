@@ -3,8 +3,6 @@
  * Zero database writes — pure Map-based.
  */
 
-import { isEmailAllowed } from './whitelist'
-
 // ── Config ──────────────────────────────────────────────────────────
 const AUTHENTICATED_LIMIT = 120   // requests per window
 const UNAUTHENTICATED_LIMIT = 30  // requests per window
