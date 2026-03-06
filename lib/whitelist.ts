@@ -37,8 +37,8 @@ export function assertProjectAccess(session: { user?: { email?: string | null } 
     }
 }
 
-// Special user check for custom landing page
-export const SPECIAL_USER_EMAIL = 'nandini.zunder@gmail.com'
+// Special user check for custom landing page (same as migraine user)
+export const SPECIAL_USER_EMAIL = MIGRAINE_USER_EMAIL
 
 export function isSpecialUser(email: string | null | undefined): boolean {
     if (!email) return false
