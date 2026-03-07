@@ -6,8 +6,7 @@
  */
 
 import { NextRequest, NextResponse } from 'next/server'
-
-type RouteHandler = (req: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse | Response>
+import { RouteHandler } from '@/lib/types'
 
 const TIMEOUT_MS = 10_000
 

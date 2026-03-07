@@ -12,8 +12,7 @@ import { authOptions } from '@/lib/auth'
 import { checkRateLimit } from '@/lib/rateLimit'
 import { isEmailAllowed } from '@/lib/whitelist'
 import { resolveIp } from '@/lib/resolveIp'
-
-type RouteHandler = (req: NextRequest, context?: Record<string, unknown>) => Promise<NextResponse | Response>
+import { RouteHandler } from '@/lib/types'
 
 /**
  * Wrap a route handler with rate limiting.
